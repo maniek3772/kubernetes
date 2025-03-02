@@ -1,0 +1,24 @@
+Kubernetes:
+
+CONTROL PLANE (Master Nodes) - mózg kubernetesa. Wysokodostępny (HA) to minimum 3 master node. Liczba powinna być nieparzysta. Wymaga QUORUM (n/2)+1 - gdzie n to liczba nodów.
+Nie może być parzysta, ponieważ przy podziale 2|2 i problemów sieciowych nie wiadomo kto ma przejąć kontrolę nad klastrem i wtedy występuje deadlock.
+
+CONTROL PLANE składa się z:
+    + apiserver{} - komunikuje się z nim użytkownik i wydaje polecenia. Komunikacja przez REST API. Komunikuje się z        nim także kubelet, który jest zainstalowany na każdym z worker nodów
+    + ControllerManager - kontroler kontrolerów: node, deployment oraz endpoints controller. Ciągle sprawdza stan           klastra. Ma za zadanie doprowadzić aktualny stan klastra do oczekiwanego. Wykrywa gdy dany node nie jest             dostępny.
+    + CloudControlerManager - jeżeli jesteśmy w chmurze. Specyficzny dla danego dostawcy chmury.
+    + Scheduler - obserwuje apiserver i czeka na nowe zadania. Przypisuje pody do poszczególnych nodów w zależności         od: dostępności nodów, określonych etykiet, określonych warunków (affinity).
+    + etcd - baza danych key-value przechowuje konfigurację oraz stan klastra. Etcd zawiera informacje: jakie pody          działają (oraz powinny działać), jakie nody wchodzą w skład klastra, sekrety 
+
+DATA PLANE (worker node) odpowiada za działanie kontenerów.
+
+DATA PLANE składa się z:
+- kubelet - komunikuje się z apiserver{}. Działa na każdym worker node. Pilnuje, żeby kontenery działały wewnątrz podów. Raportuje ich stan do master node.
+- kube-proxy - Agent sieciowy działający na każdym worker node. Odpowiada za kierowanie ruchu z Kubernetes Service do odpowiednich podów
+- container runtime (cri-o albo containerd lub wszystko co jest zgodne z CRI - Container Runtime Interface). Odpowiada za uruchamianie kontenerów. Pobiera obrazy z repozytorium.
+
+Kubernetes służy do zarządzania i orkiestracji kontenerów.
+
+Zastosowanie Kubernetes - platforma do wdrażania aplikacji typu Cloud-Native
+
+Aplikacje Cloud-Native aplikacje zgodne z zestawem reguł np. 12 factor app. Podzielone na kilka mniejszych komponentów.

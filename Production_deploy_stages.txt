@@ -1,0 +1,8 @@
+# Wdrożenie namespace
+kubectl apply -f namespace.yml
+
+# Wdrożenie deployment i service jednocześnie
+kubectl apply -f app-deploy.yml -f app-svc.yml
+
+# Sprawdzenie czy wszystko jest ok
+kubectl get all -n <nazwa_namespace>

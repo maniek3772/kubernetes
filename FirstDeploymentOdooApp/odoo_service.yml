@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-odoo 
+  namespace: odoo-namespace
+spec:
+  selector:
+    name: odoo # wskazanie na nazwę podów jakie service ma udostępniać
+  ports:
+    - port: 80  # port na zewnątrz na jakim będzie udostępniony
+      targetPort: 8069   # port kontenera
+      protocol: TCP
+  type: ClusterIP  # typ serwisu. Domyślny typ (ClusterIP) czyli udostępnienie aplikacji tylko w obrębie klastra.

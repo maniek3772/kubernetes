@@ -1,0 +1,85 @@
+Deployment - spina w całość aplikację/rozwiązanie jakie chcemy uruchomić w Kubernetes. Deployment jest per serwis/usługa.
+Deployment może:
+ - zaktualizować wersję
+ - zrobić rollback do poprzedniej wersji
+ - skalować w dół lub w górę
+
+
+Hierarchia:
+
+Deployment: # podnoszenie wersji i cofajnie się do poprzedniej (rollback)
+  ReplicaSet: # pilnuje oczekiwaną ilość działających podów
+    Pod:   # Wewnątrz poda definicja w jaki sposób mają być uruchomione kontenery
+      aplikacja
+
+
+Definicja YAML
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deploy
+  namespace: webapp-namespace #namespace do którego będą przypisane obiekty
+  labels:
+    app: k8smaestro-webapp
+
+spec:
+  selector:
+    matchLabels:
+      app: k8smaestro-webapp
+  replicas: 3 # jeśli tutaj podamy ten parametr to deployment automatycznie utworzy ReplicaSet
+  strategy:
+    type: RollingUpdate #domyślna strategia aktualizacji dla Deployment
+  template:
+    metadata:
+      labels:
+        name: k8smaestro-webapp
+    spec:
+      containers:
+      - image: k8smaestro/web-app:1.0
+        imagePullPolicy: Always # określa strategię pobierania obrazów na klaster. Przydaje się gdy dodaje się do rejestru nowy obraz o takim samym tagu. Jeżeli byłby już taki na klastrze to nie zostałby pobrany.
+        name: webapp
+        ports:
+        - containerPort: 80
+        
+
+
+
+Polecenia Deployment:
+
+# Wdrożenie Deploymentu
+kubectl apply -f deployment.yml
+
+# Sprawdzenie deploymentu
+kubectl get deployment
+
+# Sprawdzenie szczegółów deploymentu
+kubectl describe deployment <nazwa_deploymentu>
+
+# Sprawdzenie ReplicaSet
+kubectl get rs
+
+# Wyświetlenie wszystkich obiektów w Kubernetes (w bieżącym namespace)
+kubectl get all
+
+# Wyświetlenie wszystkich obiektów w Kubernetes (w innym namespace)
+kubectl get all -n <nazwa_namespace>
+
+# Zrzucenie konfiguracji Deployment do snapshot-u
+kubectl get deploy <nazwa_deploymentu> -o yaml
+
+# Podejrzenie historii deploymentu
+kubectl rollout history deployment/<nazwa_deploymentu>
+
+# Zrobienie rollback-u do poprzedniej wersji 
+kubectl rollout undo deployment/<nazwa_deploymentu>
+
+
+
+
+
+
+
+
+
+

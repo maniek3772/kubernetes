@@ -1,0 +1,40 @@
+Kubernetes dba, aby ilość i stan kontenerów się zgadzał. Nie zależy mu, żeby ten sam kontener działał ciągle. 
+
+Replica set ma właśnie takie zadanie. Dba aby ilość i stan kontenerów się zgadzał.
+
+Obiekt w kubernetes który wygląda tak
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-webapp
+  labels:
+    app: k8smaestro-webapp # do udostępniania tej ReplicaSet poprzez Kubernetes Services
+spec:
+  replicas: 3 # określa ilość podów
+  template: # jaki pod ma być uruchomiony w ramach ReplicaSet
+    metadata:
+      labels:
+        app: k8smeastro-webapp
+    spec:
+      containers:
+      - name: webapp
+        image: k8smaestro/webapp:1.0
+
+  selector: # określa jakimi podami ma się zaopiekować ReplicaSet
+    matchLabels:
+      app: k8smaestro-webapp
+
+
+
+WAŻNE!
+ReplicaSet może też zarządzać wcześniej (ręcznie) utworzonymi podami. Jeżeli w podzie będzie taki sam selektor jak w ReplicaSet
+
+# Wdrożenie ReplicaSet
+kubectl apply -f replicaset.yml
+
+# Sprawdzenie statusu ReplicaSet
+kubectl get rs
+
+# Uzyskanie szczegółów ReplicaSet
+kubectl describe rs/<nazwaReplicaSet>

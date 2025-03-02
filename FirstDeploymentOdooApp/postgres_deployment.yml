@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: odoo-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgres
+          image: docker.io/bitnami/postgresql:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRESQL_DATABASE
+              value: odoo_db
+            - name: POSTGRESQL_PASSWORD
+              value: odoo_pass
+            - name: POSTGRESQL_USERNAME
+              value: odoo_user
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: postgres-storage
+          emptyDir: {}

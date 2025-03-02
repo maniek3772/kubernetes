@@ -1,0 +1,5 @@
+# Uruchomienie proxy żeby działało
+kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
+
+# Żeby się dostać w komputera trzeba wpisać ip hosta np.
+http://192.168.0.102:8001/api/v1/namespaces/default/pods/http:hello-pod:/proxy/

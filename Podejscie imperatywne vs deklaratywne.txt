@@ -1,0 +1,22 @@
+Podejście IMPERATYWNE - dobre do testów
+
+# Uruchomienie pod-a
+kubectl run <nazwa> --image repozytorium/obraz:1.0
+
+# Uruchomienie deployment
+kubectl create deployment <nazwa> --image repozytorium/obraz:1.0
+
+#Skalowanie
+kubectl scale --replicas 3 deployment <nazwa>
+
+
+
+Podejście DEKLARATYWNE - dobre na produkcji
+Przechowywanie obiektów Kubernetes jako plików w formacie YAML. 
+Łatwo nimi zarządzać i je przechowywać w git.
+
+kubectl apply
+
+
+
+W podejściu imperatywnym jak zmieni się wersję obrazu w pliku i wykona jeszcze raz kubectl create to nie zostanie zaktualizowana w kubernetes - wyskoczy błąd. W podejściu deklaratywnym przy kubectl apply zostanie zaktualizowana.

@@ -1,0 +1,103 @@
+Namespace - czyli "wirtualny klaster"
+Zastosowania:
+- tworzenie kilku środowisk dla aplikacji w ramach tego samego fizycznego klastra np. dev, stage, prod
+- tzw. "bieda-izolacja" - pody w jednym namespace mogą się komunikować z podami z innych namespace-ów
+
+UWAGA!
+Namespace to nie jest to pełna izolacja środowisk! I nie zaleca się tego robić na produkcji.
+
+Do czego służy?
+- większość obiektów jest przypisywana do konkretnego namespace:
+ + pod
+ + ReplicaSet 
+ + Deployment
+ + Service
+ + itd.
+
+Jeżeli nie określi się gdzie ma trafić obiekt to trafia do namespace default.
+
+Istnieją także namespace na potrzeby "wewnętrzne" oraz zarządzanie klastrem
+- kube-node-lease
+- kube-public
+- kube-system
+
+Istnieją też obiekty które nie są przypisane do żadnego namespace.
+Sprawdza się je poleceniem
+kubectl api-resources --namespaced=false
+jest to np.:
+- PersistentVolume
+- IngressClass
+- StorageClass 
+- itd
+
+
+--------------
+namespace + services
+
+gdy tworzy się service, to tworzy się też wpis w DNS. Jeżeli jest namespace to wiadomo w jaki sposób odwołać się do konkretnego serwisu
+
+<service-name>.<namespace-name>.svc.cluster.local
+
+pozwala to na komunikacje pomiędzy aplikacjami, działającymi w obrębie różnych namespace (może być przydatne do współdzielenia konfiguracji pomiędzy środowiskami: Dev, Test, Stage)
+
+
+WAŻNE!
+Za pomocą namespace można ograniczyć ilość zasobów. 
+Obiekt ResourceQuota
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: webapp-namespace
+spec:
+  hard:
+    pods: "10" # maksymalna ilość podów
+    requests.cpu: "0.5"
+    requests.memory: 1Gi # suma CPU
+    limits.cpu: "1"
+    limits.memory: 2Gi # suma pamięci
+
+# Polecenie na sprawdzenie
+kubectl get resourcequota -n webapp-namespace
+
+
+Przykład Namespace
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webapp-namespace
+
+
+Polecenia dla Namespace
+
+# Wyświetlenie listy namespace
+kubectl get namespaces
+
+# Wyświetlenie podów w konkretnym namespace
+kubectl get pods -n <nazwa_namespace>
+
+# Wyświetlenie wszystkiego co jest w konkretnym namespace
+kubectl get all -n <nazwa_namespace>
+
+# Wyświetlenie listy obiektów które zawsze są przypisywane do namespace
+kubectl api-resources --namespaced=true
+
+# Wyświetlenie listy obiektów które nie są przypisywane do namespace (są to obiekty globalne)
+kubectl api-resources --namespaced=false
+
+# Ustawienie domyślnego kontekstu czyli domyślnego namespace z którego będą wyszukiwane obiekty
+kubectl config set-context --current --namespace=<nazwa_namespace>
+
+
+
+
+
+
+
+
+
+
+
+

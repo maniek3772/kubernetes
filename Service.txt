@@ -1,0 +1,18 @@
+Service - udostępnianie aplikacji 
+
+
+Przykład
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-2048    
+  namespace: game-2048
+spec:
+  selector:
+    name: app-2048 # wskazanie na nazwę podów jakie service ma udostępniać
+  type: LoadBalancer # wykonywane na chmurze
+  ports:
+    - port: 80  # port na zewnątrz na jakim będzie udostępniony
+      targetPort: 80   # port kontenera
+      protocol: TCP
+  type: ClusterIP  # typ serwisu. Domyślny typ (ClusterIP) czyli udostępnienie aplikacji tylko w obrębie klastra.

@@ -1,0 +1,53 @@
+# Uruchomienie pod-a
+kubectl apply -f pod.yml
+
+# Sprawdzenie czy działa 
+kubectl get pod
+kubectl get pods
+
+# Sprawdzenie czy działa i gdy status się zmieni to będzie aktualizacja
+kubectl get pod --watch
+
+# Sprawdzenie szczegółów pod-a
+kubectl describe pod <nazwa_poda> 
+
+# Podpięcie się do głównego procesu jednego z kontenerów
+kubectl attach -it <nazwa_poda>
+
+# Uruchomienie bash-a
+kubectl exec -it <nazwa_poda> -- /bin/bash
+
+# Wyświetlenie logów jeżeli jest jeden kontener w podzie
+kubectl logs -f <nazwa_poda>
+
+# Wyświetlenie logów jeżeli jest więcej niż jeden kontener w podzie
+kubectl logs -f <nazwa_poda> <nazwa_kontenera>
+
+# Zrzucenie aktualnej konfiguracji poda do pliku YAML
+kubectl get pod <nazwa> -o yaml > <nazwa>-snapshot.yml
+
+# Wyświetlenie wszystkich obiektów w Kubernetes (w bieżącym namespace)
+kubectl get all
+
+# Wyświetlenie wszystkich obiektów w Kubernetes (w innym namespace)
+kubectl get all -n <nazwa_namespace>
+
+# Wyświetlenie większej ilości informacji
+kubectl get pods -n <nazwa_namespace> -o wide
+
+
+# DO testów można uruchomić w nowej karcie proxy
+kubectl proxy
+
+następnie w przeglądarce wpisuje się adres
+w przykładzie nazwa poda to hello-pod
+http://localhost:8001/api/v1/namespaces/default/pods/http:hello-pod:/proxy/
+
+# Czyszczenie w podejściu DEKLARATYWNYM
+kubectl delete -f pod.yml
+
+# Czyszczenie w podejściu IMPERATYWNYM
+kubectl delete pod <nazwa_poda>
+
+Podejście DEKLARATYWNE jest pliczek pod.yml i robimy kubectl apply -f pod.yml
+Podejście IMPERATYWNE po prostu uruchamiamy poleceniem kubectl run <nazwa-poda> --image <repo/obraz>
