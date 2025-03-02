@@ -1,0 +1,32 @@
+Podczas budowania kontenerów instrukcje ENTRYPOINT i CMD określają punkt startowy kontenera
+
+
+CMD instrukcje można nadpisać podczas startu kontenera
+
+ENTRYPOINT powinien wykonać się zawsze.
+
+Może być też tak że:
+ 
+ENTRYPOINT ["docker-entrypoint.sh"]
+CND ["node","server.js"]
+
+w docker-entrypoint.sh jest inicjalizowana usługa
+wtedy w CMD przekazujemy dodatkowe argumenty potrzebne w ENTRYPOINT
+
+
+W Kubernetes inaczej nazywają się te instrukcje
+ENTRYPOINT = command
+CMD = args
+
+Przykład:
+
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: web-app
+spec:
+  containers:
+  - name: webapp
+    image: k8smaestro/web-app:1.0
+    command: ["docker-entrypoint.sh"]
+    args: ["node", "server.js"]

@@ -1,0 +1,27 @@
+1) ConfigMaps - centralne zarządzanie konfiguracją oraz podmontowanie tej konfiguracji do kontenerów.
+Tworzy się jedną ConfigMap i można ją wykorzystać do wielu kontenerów
+
+Przykład:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multimap
+data:
+  given: Marcin
+  family: Tracz
+
+2) Secrets - bardziej wrażliwe (hasła, tokeny, klucze itd.)
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-secret
+  labels: 
+    app: mysql
+type: Opaque
+data:
+  DB_USER: azhzbWF1c3Bybw==
+  DB_PASSWORD: d2tvbnR1bmVyYWNoiTSKmje=
+
+Są to stringi w base64

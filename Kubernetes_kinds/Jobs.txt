@@ -1,0 +1,41 @@
+JOBS 
+
+- obiekt w kubernetes, który tworzy jeden lub więcej podów (w zależności od potrzeb)
+- służą do długotrwałych zadań, które mają się wykonywać jeden lub więcej razy
+
+Zastosowanie:
+- skomplikowane i długotrwałe obliczenia
+- analityka/przetwarzanie danych
+- kompresja zdjęć
+
+JOB jest uznany za kompletny, gdy wszystkie Pody wykonają prace i ich procesy zostaną zakończone poprawnie
+
+
+Pody mogą być tworzone równolegle albo pojedynczo (tylko jeden Pod może działać w tym samym czasie)
+
+Przykład:
+Zostanie stworzone 5 podów, pody będą się wykonywać jeden po drugim
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: myjob
+spec:
+  suspend: true
+  activeDeadlineSeconds: 1800 #limit ile max czasu job może się wykonywać. Jeżeli wszystkie Pody nie zakończą swojego działania w tym czasie to Job zostanie uznany za failed.
+  backoffLimit: 4 #limit błędów dla JEDNEGO poda. Jeżeli zostanie przekroczony to Job zostanie uznany jako failed. Czyli Pod może się 3 razy wysypać i zostanie uznany jako dobrze wykonany. Dopiero jak 4 raz się wysypie to zostanie uznany za failed.
+  parallelism: 1  #będą się wykonywać jeden po drugim
+  completions: 5
+  template:
+    spec:
+      .......
+
+
+
+Komendy:
+# Pokazanie logów w czasie rzeczywistym z job-a
+kubectl logs -f -l job-name=<nazwa_job>
+
+
+# Pokazanie szczegółów job-a
+kubectl describe jobs/<nazwa_job>

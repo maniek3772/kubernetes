@@ -1,0 +1,73 @@
+1) ConfigMaps - centralne zarządzanie konfiguracją oraz podmontowanie tej konfiguracji do kontenerów.
+Tworzy się jedną ConfigMap i można ją wykorzystać do wielu kontenerów
+
+Przykład ConfigMap:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  ROOT_RANDOM_PASSWORD: 1
+
+
+Przykład kontener:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-pod
+  labels:
+    app: mysql
+spec:
+  containers:
+  - name: mysql-ctr
+    image: mysql:5.7
+    env:
+    - name: MYSQL_RANDOM_ROOT_PASSWORD
+      valueFrom:
+        configMapKeyRef:
+          name: mysql-config
+          key: ROOT_RANDOM_PASSWORD
+
+
+Drugi przykład ConfigmMap to przekazywanie wartości z ConfigMaps do kontenerów poprzez volumeny.
+
+Przykład ConfigMap:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    server {
+    listen    80;
+    listen [::]:80;
+    ....
+    ....
+    }
+
+
+Przyklad kontener:
+
+spec:
+  containers:
+  - name: webapp-ctr
+    image: httpd:2.4.47
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: "/etc/nginx/conf.d"
+      name: nginx-conf
+      readOnly: true
+volumes:
+  - name: nginx-conf
+    configMap:
+      name: nginx-conf
+      items:
+        - key: nginx.conf
+          path: default.conf 
+
+
+Komendy:
+# Wyświetlenie listy ConfigMap
+kubectl get configmap

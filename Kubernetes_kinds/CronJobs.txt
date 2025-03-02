@@ -1,0 +1,63 @@
+CronJobs
+
+- przeznaczony do wykonywania cyklicznych zadań (co określony interwał czasowy)
+- format (*/5****) - wykonywane co pięć minut
+
+
+* minuty 0-59
+* godziny 0-23
+* dni miesiąca 1-31
+* miesiące 1-12
+* dni tygodnia 0-6 (0 do 6 to Niedziela do Soboty, można używać nazw, 7 to także Niedziela)
+
+*****
+
+Zastosowania:
+- wysyłka zaplanowanych maili
+- tworzenie snapshotów danych
+- generowanie raportów
+- czyszczenie danych tymczasowych
+
+
+Narzędzie do generowania interwałów czasowych
+https://crontab.guru
+
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-km
+spec:
+  schedule: "*/1 * * * *"
+  # Allow, Forbid, Replace
+  concurrencyPolicy: "Replace" #jeżeli poprzedni job się nie skończy, zostanie anulowany i zostanie utworzony nowy
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cronjob-ctr
+            image: k8smastr/email-sender
+          restartPolicy: OnFailure
+
+
+
+Na co zwrócić uwagę przy CronJobs??
+1. Współbieżność - określa czy jeśli jeden Job jeszcze nie skończył swojej pracy, to czy drugi może rozpocząć pracę (domyślnie jest to dozwolone). Odpowiada za to parametr:
+.spec.concurrencyPolicy: Allow
+
+2. Jeśli job się nie wykonał - można określić ile czasu max może upłynąć, aby spróbować uruchomić go jeszcze raz.
+Odpowiada za to parametr:
+.spec.startingDeadlineSeconds
+
+Przykład:
+Jeżeli startingDeaadlineSeconds: 60
+To Job może się wykonać TYLKO w ciągu 60 sekund od momentu jego początkowo zaplanowanego wykonania
+
+
+Komendy:
+# Sprawdzenie jakie CronJobs działają 
+kubectl get cj
+
+# Pokazanie szczegółów CronJob
+kubectl describe cj <nazwa_cron_job>

@@ -35,6 +35,24 @@ kubectl get all -n <nazwa_namespace>
 # Wyświetlenie większej ilości informacji
 kubectl get pods -n <nazwa_namespace> -o wide
 
+# Wyświetlenie listy ConfigMap
+kubectl get configmap
+
+# Pokazanie logów w czasie rzeczywistym z job-a
+kubectl logs -f -l job-name=<nazwa_job>
+
+# Pokazanie szczegółów job-a
+kubectl describe jobs/<nazwa_job>
+
+# Sprawdzenie jakie CronJobs działają 
+kubectl get cj
+
+# Pokazanie szczegółów CronJob
+kubectl describe cj <nazwa_cron_job>
+
+
+
+
 
 # DO testów można uruchomić w nowej karcie proxy
 kubectl proxy

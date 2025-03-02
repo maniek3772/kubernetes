@@ -1,0 +1,36 @@
+Potrzebne do przekazywania konfiguracji.
+
+Sposoby na przekazywanie zmiennych środowiskowych:
+1) klucz-wartość
+env:
+  - name: API_URL
+    value: "https://api.example.com"
+
+2) ConfigMap
+env:
+  - name: API_URL
+    valueFrom: 
+      configMapKeyRef:
+
+3) Secrets
+env:
+  - name: API_URL
+    valueFrom: 
+      secretKeyRef:
+
+
+Przykład:
+
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: frontend
+spec:
+  containers:
+    - name: frontend-ctr
+      image: k8s/projectapp-frontend:1.0
+      ports:
+        containerPort: 8080
+      env:
+      - name: API_URL
+        value: "https://api.example.com"
