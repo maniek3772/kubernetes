@@ -1,11 +1,11 @@
 # Uruchomienie pod-a
 kubectl apply -f pod.yml
 
-# Sprawdzenie czy działa 
+# Sprawdzenie czy pod działa 
 kubectl get pod
 kubectl get pods
 
-# Sprawdzenie czy działa i gdy status się zmieni to będzie aktualizacja
+# Sprawdzenie czy pod działa i gdy status się zmieni to będzie aktualizacja
 kubectl get pod --watch
 
 # Sprawdzenie szczegółów pod-a
@@ -32,7 +32,7 @@ kubectl get all
 # Wyświetlenie wszystkich obiektów w Kubernetes (w innym namespace)
 kubectl get all -n <nazwa_namespace>
 
-# Wyświetlenie większej ilości informacji
+# Wyświetlenie większej ilości informacji o podach w namespace
 kubectl get pods -n <nazwa_namespace> -o wide
 
 # Wyświetlenie listy ConfigMap
@@ -49,6 +49,12 @@ kubectl get cj
 
 # Pokazanie szczegółów CronJob
 kubectl describe cj <nazwa_cron_job>
+
+# pokazanie jakie service są na klastrze
+kubectl get svc -o wide
+
+# pokazanie większej ilości informacji o service
+kubectl describe svc <nazwa_service>
 
 
 

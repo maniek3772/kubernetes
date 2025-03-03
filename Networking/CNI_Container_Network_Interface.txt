@@ -1,0 +1,19 @@
+Wstęp:
+- każdy node może się komunikować z innymi
+- każdy pod może się komunikować z innymi
+- każdy pod otrzymuje unikalny adres IP
+- kubernetes sam w sobie nie zarządza całą komunikacją sieciową
+
+Container Network Interface - CNI to specyfikacja wraz ze zbiorem bibliotek do tworzenia pluginów (CNI plugin). Dzięki temu rozdziela się temat uruchamiania kontenerów od networkingu.
+
+Domyślnie kontener/pod nie ma interfejsu sieciowego
+CNI plugin tworzy interfejs sieciowy oraz konfiguruje adresację IP dla Poda
+CNI plugin odpowiada za komunikację pomiędzy podami
+CNI plugin usuwa interfejs, gdy pod jest usuwany
+
+Popularne CNI pluginy:
+- kubenet - prosty plugin sieciowy dla Linuxa
+- Calico
+- Weave
+- Azure CNI
+- Amazon CNI

@@ -1,0 +1,97 @@
+Kubernetes Ingress - obiekt który zarządza zewnętrznym dostępem do Kubernetes Services działających wewnątrz klastra.
+
+Posiada więcej możliwości niż np. Kubernetes Load Balancer Service ponieważ:
+- zapewnia komunikacje po SSL
+- kierowanie/rozdzielanie ruchu na podstawie adresu URL
+- zaawansowany LoadBalancing
+
+WAŻNE:
+są dwa rodzaje obiektów:
+- Ingress Resource - tu definiujemy w jaki sposób rozrzucać ruch do naszej aplikacji. Ingress Resource nie zrobi nic jeżeli nie będzie zainstalowanego Ingress Controllera
+
+- Ingress Controller - odpowiedzialny za rozdzielenie ruchu do poszczególnych  Service w klastrze. Trzeba go samodzielnie zainstalować na klastrze. Może być jeden albo wiele. Instalacja do uruchomienie odpowiedniego Deployment-u (ConfigMap, ServiceAccount, RoleBinding, Service, ClusterRole itd).
+
+
+Ingress Controller - opcje:
+- Load Balancer w GCP - GKE
+- NGINX
+- Contour
+- HAProxy
+- Traefik
+
+NGINX oraz GCE są oficjalnie wspierane i rozwijane przez Kubernetes
+
+
+Ingress Controller - zadania
+- nie jest to LoadBalancer - (LoadBalancer jest jednym z elementów Ingress Controller)
+- ciągłe monitorowanie klastra:
+  + wykrywanie nowych definicji Service oraz Ingress Resource
+  + konfiguracja serwera (np. NGINX) zgodnie z aktualnymi obiektami w Kubernetes
+- kierowanie ruchu do odpowiednich Service na podstawie definicji zawartych w Ingress Resource
+
+
+Schemat: 
+- Użytkownik
+  - Publiczny adres IP dla Ingresa - Load balancer chmury
+      - Igress Controller komunikuje się z Ingress Resource (definicja ruchu do poszczególnych service)
+        - ServiceA
+          - Pod1, Pod2 
+        - ServiceB
+          - Pod3, Pod4
+
+
+Przykład Ingress Resource
+
+apiVersion: networking.ks.io/v1
+kind: Ingress
+metadata:
+  name: ingress-resource
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: konta.pl
+    http:
+      paths:  
+      - path /blog
+        backend:
+          service:
+            name: blog-svc
+            port:
+              number: 80
+      - path: /szkolenia
+        backend:
+          service:
+            name: szkolenia-svc
+            port:
+              number: 80
+  - host: akademia.konta.pl
+    http:
+      paths:
+        - backend:
+            serviceName: main-svc
+            servicePort: 80
+
+
+Polecenia:
+# Sprawdzenie czy ingress controller nginx się zainstalował
+kubectl get pods -n ingress-nginx
+
+# Sprawdzenie External-IP dla nginx
+kubectl get svc --namespace=ingress-nginx
+
+#Po wdrozeniu ingress resources, czekamy chwile na IP
+kubectl get ingress
+
+
+
+
+
+
+
+
+
+
+
+
+

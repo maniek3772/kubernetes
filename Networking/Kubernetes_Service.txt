@@ -1,0 +1,125 @@
+Service automatycznie rozdziela i przekierowuje ruch do podów z jednego stałego adresu IP serwisu.
+
+Schemat:
+- Użytkownik
+  - Namespace
+    - Service (ma stały adres IP. Jest generowana nazwa (wpis w DNS) zarejestrowana w DNS klastra)
+      - Deployment
+        - ReplicaSet
+          - Pod1, Pod2, Pod3
+
+
+Jeżeli chce się skomunikować dwa mikroserwisy wystarczy wpisać nazwę serwisu (np. app1-svc.prod.svc.cluster.local). Wtedy mikroserwis zapyta się DNS kubernetesowego i od niego dostanie adres IP na który powinien się komunikować.
+
+Wpisy w DNS są tworzone według schematu:
+<nazwa_service>.<nazwa_namespace>.svc.cluster.local
+
+Serwisy gwarantują Podom stały adres IP oraz unikalną nazwę DNS w klastrze.
+
+W Kubernetes do dyspozycji są następujące service:
+- ClusterIP (domyślny typ Service, otrzymuje własny adres IP, dostępny tylko wewnątrz klastra)
+- NodePort (port przypisany dla cełego klastra - dostępny na każdym nodzie, dostępny także na zewnątrz klastra)
+- LoadBalancer (przewidziany dla Kubernetes w chmurze, integruje się z chmurowym LoadBalancerem, pod spodem wykorzystuje NodePort i kieruje ruch do podów)
+- ExternalName (mapuje service na wpis w DNS, akceptuje tylko nazwy DNS zgodne z IPv4 [nie wspiera adresów IP], nie operuje na etykietach [labels], może się sprawdzić podczas migrowania części systemu do kubernetes
+
+Skąd service wie do jakich podów ma kierować ruch??
+W service definiujemy selektor i na podstawie selektora service wie gdzie kierować ruch.
+
+Skąd service zna adesy IP podów?
+W Kubernetes działa jeszcze jeden obiekt - ENDPOINT i to on definiuje jakie adresy mają pody wchodzące w skład service
+
+
+Przykład ReplicaSet
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-cart
+  labels:
+    app: cart
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cart
+    template:
+      metadata:
+        labels:
+          app: cart # TUTAJ OKREŚLAMY W ReplicaSet
+      spec:
+        containers:
+        - name: webapp
+          image: k8smaest/cart:1.0
+          ports:
+            - containerPort: 8080
+    
+
+Przykład Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-svc
+spec:
+  ports:
+    - port: 80
+    - targetPort: 8080
+  selector:
+    app: cart # TUTAJ W SERVICE OKREŚLAMY
+
+
+Przykład Service - ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-clusterip-svc
+spec:
+  ports:
+    - port: 80
+      target port: 8080 # tutaj jest taki sam port jak kontenera
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    name: ks-webapp
+
+
+
+Przykład Service - NODE PORT
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-nodeport-svc
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      nodePort: 30080   # TUTAJ określamy na jakim porcie udostępnić
+  type: NodePort
+  selector:
+    name: ks-webapp
+  
+
+Przykład Service - LoadBalancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-demo-svc
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080 # taki jak w kontenerze
+      protocol: TCP
+  type: LoadBalancer
+  selector:
+    name: lb-demo
+
+
+
+Komendy:
+# pokazanie jakie service są na klastrze
+kubectl get svc -o wide
+
+# pokazanie większej ilości informacji o service
+kubectl describe svc <nazwa_service>
+
+
+
