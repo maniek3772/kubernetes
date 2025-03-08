@@ -1,0 +1,56 @@
+Docker
+Każdy kontener uruchamiany pojedynczo. 
+Dane były:
+- w wolumenie zarządzanym przez Dockera
+- wyodrębnione jako katalog/plik na dysku i podmontowane do kontenera 
+
+Jeśli usunęło się kontener to dane zostawały na hoście.
+
+------------------------------------------------------
+Kubernetes
+
+Wolumeny efemeryczne (ulotne) - dane przechowywane tak długo jak Pod istnieje. Najczęściej są to lokalne wolumeny (dane na nodzie z Podem).
+Przykłady:
+ - EmptyDir
+ - ConfigMap
+ - Secret
+ - CSI ephemeral volumes
+
+
+Wymagania dla przechowywania danych w Kubernetes
+- brak zależności od cyklu życia Podów
+- dostępny dla wszystkich Node w klastrze
+- musi przetrwać, nawet gdy cały klaster ulegnie awarii
+
+
+Persistent Volumes:
+- obiekt dla całego klastra
+- nie jest przypisany do namespace (można współdzielić)
+- tworzone za pomocą YAML
+- mapują fizyczny (najczęściej zewnętrzny) storage na obiekt w Kubernetes
+
+
+Przykład zewnętrznego systemu plików:
+Dyski sieciowe:
+- NFS
+- GlusterFS
+Chmurowe:
+- AWS EBS
+- Azure Files
+- GCE Persistent Disk
+
+
+Przykład Persistent Volumes:
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ps-vol
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  persistentVolumeReclaimPolicy: Retain
+  gcePersistentDisk:
+    pdName: ps-vol

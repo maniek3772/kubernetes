@@ -1,0 +1,128 @@
+Wolumeny efemeryczne można używać do:
+- wstrzykiwania konfiguracji
+- wstrzykiwania sekretów
+- w podejściu Multi-ContainerPod do współdzielenia danych między kontenerami działającymi w tym samym Podzie
+- zapewniają trwałość podczas restartu kontenera, ale gdy Pod jest usuwany to wolumen także jest usuwany
+
+Typy:
+- configMap:
+  + montowane do Poda jako plik
+  + wartości przechowywane na dysku (ssd/hdd)
+- secret:
+  + montowane do Poda jako plik
+  + wartości przechowywane w RAM (tmpfs)
+- emptyDir:
+  + alokowany jest pusty wolumen, aby kontenery w ramach     jednego Poda mogły zapisywać tam dane
+  + dane zwykle zapisywane na dysku twardym, ale można też     użyć pamięci RAM (tmpfs)
+- downwardAPI:
+  + wstrzykuje się do systemu plików kontenera informacje     pochodzące z ApiServer{}
+    * informacje o Podzie
+    * informacje o samym sobie (kontenerze)
+  + w pliku /etc/podinfo zostaną zapisane etykiety (labels)     Poda
+- CSI ephemeral volumes:
+  + specyficzne dla danego CSI drivera
+  + działają podocnie do configMap, secret, downwardAPI
+
+
+
+Inne volumeny:
+- hostPath (jest antywzorcem w Kubernetes)
+  + montuje pliki z kontenera do systemu plików Noda. Używany     np do uruchamiania narzędzi monitorujących
+
+
+Wolumenty chmurowe oraz sieciowe:
+- wbudowane sterowniki do chmurowych/sieciowych zasobów:
+  np. NFS, AWS EBS, Azure Files, Azure Disks, GCE Persistent   Disk
+- mogą być wcześniej wypełnione danymi - aby współdzielić   dane międy Podami
+- w większości, gdy Pod zostanie usunięty, dane zostaną   zachowane (ale zawsze trzeba to zweryfikować samodzielnie)
+
+
+
+
+
+Przykład emptyDir:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  containers:
+  - image: ks/webapp:1.0
+    name: webapp-ct
+    volumeMounts:
+      - mountPath: /cache
+        name: cache-volume
+    volumes:
+      - name: cache-volume
+        emptyDir:
+          medium: Memory
+          sizeLimit: "1Gi"
+
+
+Przykład downwardAPI
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  containers:
+  - image: ks/webapp:1.0
+    name: webapp-ct
+    volumeMounts:
+    - name: podinfo
+      mountPath: /etc/pod-info
+volumes:
+  - name: podinfo
+    downwardAPI:
+      items:
+        - path: "labels"
+          fieldRef:
+            fieldPath: metadata.labels
+
+
+Przykład CSI ephemeral volumes
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-pod
+spec:
+  containers:
+  - image: ks/webapp:1.0
+    name: webapp-ct
+    volumeMounts:
+    - name: my-csi-inline-vol
+      mountPath: /data
+  volumes:
+  - name: my-csi-inline-vol
+      csi:
+        driver: inline.storage.kubernetes.io
+
+
+Przykład hostPath
+apiVersion: v1
+kind: Pod
+metadata:
+  name: monitoring-pod
+spec:
+  containers:
+  - image: google/cadvisor:v0.31.0
+    name: cadvisor
+    volumeMounts:
+    - name: rootfs
+      mountPath: /rootfs
+      readOnly: true
+    - name: var-run
+      mountPath: /var/run
+      readOnly: false 
+volumes:
+  - name: rootfs
+    hostPath:
+      path: /
+  - name: var-run
+    hostPath:
+      path: /var/run
+
+
+
+
+

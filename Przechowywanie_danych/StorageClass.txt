@@ -1,0 +1,96 @@
+Storage Class
+- obiekt w kubernetes powiązany z Persistent Volume i Persistent Volume Claims
+- pozwala na dynamiczne tworzenie Persistent Volumes
+- jest to instrukcja jak zmapować Peristent Volume Claim na zewnętrzny Storage (np. Azure Disks)
+- można tworzyć wiele takich klas, dzięki czemu można korzystać z wielu zewnętrznych systemów do przechowywania danych jednocześnie (np. Azure Disk i Azure Files i GCE Persistent Disk). Do tego wykorzystuje się pluginy 
+
+
+
+Przykład Storage Class:
+
+apiVersion: storage.ks.io/v1
+kind: StorageClass
+metadata:
+  name: my-gce-pd
+provisioner: kubernetes.io/gce-pd   #typ sterownika z jakim ma się połączyć kubernetes
+volumeBindingMode: WaitForFirstCustomer
+reclaimPolicy: Retain
+parameters:
+   type: pd-standard
+   fstype: ext4
+   replication-type: none
+
+
+WAŻNE!
+volumeBindingMode - domyślnie jest to Immediate, który nie czeka na stworzenie Pod-a, który będzie używać tego wolumenu. Immediate tworzy automatycznie Persistent Volume od razu po stworzeniu Persistent Volume Claim. 
+Niestety WaitForFirstCustomer nie jest wspierany przez wszystkie sterowniki.
+
+UWAGA!
+parameters - są to parametry specyficzne dla danego sterownika. Zawsze trzeba sprawdzać w dokumentacji co tam wpisać.
+
+
+Obowiązują te same polityki co w przypadku Persistent Volume. Jeśli nie zostanie wymieniona polityka - domyślnie jest to Delete.
+
+Polityki (Reclaim policy) dla Persistent Volume - czyli co się dzieje po usunięciu Persistent Volume
+- Retain - po usunięciu Persistent Volume, zewnętrzny zasób musi zostać usunięty ręcznie
+- Delete - przypisany do Persistent Volume zewnętrzny zasób jest usuwany automatycznie
+- Recycle - czyści pliki i zwalnia miejsce (rm -rf /dysk/*). Mało sterowników obsługuje taką opcje
+
+
+
+Pełen przykład Storage Class - Persistent Volume Claim - Pod
+
+Storage Class
+
+apiVersion: storage.ks.io/v1
+kind: StorageClass
+metadata:
+  name: my-gce-pd
+provisioner: kubernetes.io/gce-pd
+volumeBindingMode: WaitForFirstCustomer
+reclaimPolicy: Retain
+parameters:
+   type: pd-standard
+   fstype: ext4
+   replication-type: none
+
+Persistent Volume Claim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-htmlvol
+spec:
+  storageClassName: "my-gce-pd"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+
+Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-pod
+spec:
+  volumes:
+    - name: fast10g
+      persistentVolumeClaim:
+        claimName: pvc-htmlvol
+  containers:
+    - name: main-ctr
+      image: ks/web-app:1.0
+      ports:
+        - containerPort: 80
+          name: http-server
+      volumeMounts:
+        - mountPath: /var/www/html
+          name: fast10g
+
+
+Polecenia:
+# sprawdzenie jakie Storage Class są na klastrze
+kubectl get sc
+

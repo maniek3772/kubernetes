@@ -1,0 +1,34 @@
+Aby móc skomunikować się z poziomu Kubernetes do zewnętrznego systemu potrzebny jest sterownik.
+
+Typy wolumenów:
+- AWS EBS
+- Azure Files
+- Azure Disk
+- GCE Persistent Disk
+- NFS
+- GlusterFS
+- CephFS
+
+każdy z nich potrzebuje dedykowany Storage driver, aby komunikować się z Kubernetes
+
+Minusy:
+- zarządzenie zewnętrznym kodem w K8s
+- fix bug-a w kodzie sterownika dla volumenu = wydanie nowej wersji K8s
+- dodanie obsługi nowego sterowanika = wydanie nowej wersji K8s
+
+
+Dlatego powstał standard Container Storage Interface. Zbiór reguł w jaki sposób powinny być robione sterowaniki. Zewnętrzne systemy które dostarczają storage mogą samodzielnie robić sterowniki.
+
+Zalety:
+- uniwersalny sposób na tworzenie nowych sterowników dla wolumentów (CSI plugins/drivers)
+- zarządzanie zewnętrznym kodem poza K8s
+- fix bug-a w kodzie sterownika dla wolumenu = wydanie nowej wersji sterownika
+- użytkownik sam decyduje jakich sterowników chce używać (zainstalowanie sterownika w swoim klastrze)
+
+
+CSI Drivers - przykłady
+- Azure Files
+- Amazon EBS
+- GCE Persistent Disk
+
+więcej tutaj - https://github.com/kubernetes-sigs

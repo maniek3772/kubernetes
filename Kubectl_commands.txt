@@ -56,6 +56,15 @@ kubectl get svc -o wide
 # pokazanie większej ilości informacji o service
 kubectl describe svc <nazwa_service>
 
+# sprawdź czy Persistent Volume został utworzony
+kubectl get pv
+
+# sprawdź czy Persistent Volume Claim został utworzony
+kubectl get pvc
+
+# sprawdzenie jakie Storage Class są na klastrze
+kubectl get sc
+
 
 
 

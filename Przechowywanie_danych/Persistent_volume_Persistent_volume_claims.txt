@@ -1,0 +1,116 @@
+Persistent Volumes
+- niezależny od podów obiekt widziany dla całego klastra
+- nie jest przypisany do namespace (można je współdzielić)
+- mapują fizyczny (najczęściej zewnętrzny) storage na obiekt w Kubernetes
+
+Zasada działania:
+Zewnętrzny system plików łączy się z Kubernetes i tworzy się obiekt w Kubernetes - Persistent Volume. Do poda podaje się nazwę Persistent Volume Claim i dzięki temu Pod jest w stanie zapisywać dane poza klastrem.
+
+
+Persistent Volume Claim - żądanie określonego miejsca w pamięci z Persistent Volume np. 6GB z 10 GB. Wskazuje się poprzez nazwę którego wolumena chce się użyć. 
+ 
+Persistent Volume Claim można podłączyć do poszczególnych podów.
+
+UWAGA!
+Ten storage musi być przez Nas utworzony i dopiero później zmapowany na obiekt Persistent Volume w Kubernetes. Pojemność Persistent Volume musi być zgodna z fizycznym rozmiarem.
+
+
+
+PODSUMOWANIE
+Persistent Volume - fizyczny, wcześniej utworzony Storage:
+- tworzy go np. osoba zarządzająca klastrem
+- najpierw tworzy się Storage, później tworzy się Persistent Volume
+- jest to globalny obiekt (bez przypisania do namespace)
+
+Persistent Volume Claim to żądanie określonej ilości miejsca wraz z typem dostępu do wcześniej zdefiniowanego Persistent Volume
+- tworzy go np. programista/użytkownik wdrażający apkę do przechowywania danych dla Podów
+- jest przypisany do konkretnego namespace
+
+Typy dostępów (Access Mode) do Persistent Volume:
+- ReadWriteOnce - może być podmontowany tylko na jednym nodzie do odczytu i zapisu
+- ReadOnlyMany - może być podmontowany na kilku nodach, ale tylko do odczytu
+- ReadWriteMany - może być podmontowany na kilku nodach, zarówno do odczytu i zapisu
+
+UWAGA!
+Wolumen może być podmontowany przez jeden typ dostępu tylko raz w tym samym czasie. Nie każdy sterownik wolumenów obsługuje wszystkie trzy typy dostępów.
+
+
+Polityki (Reclaim policy) dla Persistent Volume - czyli co się dzieje po usunięciu Persistent Volume
+- Retain - po usunięciu Persistent Volume, zewnętrzny zasób musi zostać usunięty ręcznie
+- Delete - przypisany do Persistent Volume zewnętrzny zasób jest usuwany automatycznie
+- Recycle - czyści pliki i zwalnia miejsce (rm -rf /dysk/*). Mało sterowników obsługuje taką opcje
+
+UWAGA!
+Nie każdy sterownik wolumenów obsługuje wszystkie trzy typy dostępów
+
+
+
+Przykład Persistent Volume:
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ps-vol
+spec:
+  accessMode:
+  - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  gcePersistentDisk:
+    pdName: ps-vol
+
+
+Przykład Persistent Volume Claim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ps-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeName: ps-vol
+  resources:
+    requests:
+      storage: 6Gi
+
+Przykład Pod-a korzystającego z Persistent Volume Claim
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-pod
+spec:
+  volumes:
+    - name: fast10g
+      persistentVolumeClaim:
+        claimName: ps-pvc
+  containers:
+    - name: main-ctr
+      image: ks/web-app:1.0
+      ports:
+       - containerPort: 80
+         name: http-server
+      volumeMounts:
+       - mountPath: /var/www/htlm
+         name: fast10g
+
+
+Komendy:
+# sprawdź czy Persistent Volume został utworzony
+kubectl get pv
+
+# sprawdź czy Persistent Volume Claim został utworzony
+kubectl get pvc
+
+
+
+
+
+
+
+
+
+
+
+

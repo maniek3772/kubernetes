@@ -1,0 +1,62 @@
+Multi-Container Pod - podstawowe zadanie to współdzielenie plików pomiędzy kontenerami
+
+Zastosowanie:
+- dla aplikacji które nie zostały zaprojektowane z myślą o   kontenerach/Kubernetes
+- pozwala na zmianę zachowania aplikacji bez konieczności   zmian w kodzie źródłowym
+
+W podzie mogą być współdzielone:
+- sieć
+- wolumeny
+
+W podzie może działać jeden lub dwa kontenery np. podstawowy kontener z aplikacją i:
+- SideCar np.:
+  - główny kontener to WebServer, a następny to LogSaver do przechwytywania logów z dysku zapisywanych przez WebServer i przesyłanie do zewnętrznego systemu
+- Ambassador np.:
+  - dodanie ReverseProxy dla kontenera z darmową wersją Elasticsearch, która będzie działać po https. Domyślnie darmowy Elasticsearch działa po http
+
+
+Init Containers - kontener pomocniczy, który uruchamia się przed uruchomieniem głównego kontenera. Można zdefiniować kilka Init Containers które będą się uruchamiać kolejno po sobie. 
+UWAGA!
+Jeśli wystąpi błąd w tym kontenerze pomocniczym to kubelet będzie go restartował dopóki działanie nie zakończy się powodzeniem
+
+Zastosowania init Containers:
+- kontener pomocniczy może mieć w sobie dodatkowe narzędzia, których nie trzeba mieć w głównym kontenerze (git, curl)
+- kontener pomocniczy może mieć dostęp do systemu plików głównego kontenera np. wygeneruj konfigurację dla głównego kontenera -> sklonuj repo z git do wolumenu -> zarejestruj pod-a w zewnętrznym systemie
+
+
+Init Containers:
+- sekcja initContainers
+- kontener pomocniczy współdzieli dane przez wolumen z kontenerem aplikacji
+- wolumeny mogą być zmapowane na inne katalogi w każdym kontenerze
+
+
+Przykład init containers:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app-init
+spec:
+  initContainers:
+  - name: init-sync-ctr
+    image: ls/git:2.11.1
+    volumeMounts:
+    - mountPath: /var/lib/data
+      name: git
+    command:
+    - "sh -c git clone $(GIT_REPO) . && git pull"
+    workingDir: /var/lib/data
+    env:
+    - name: GIT_REPO
+      value: <tutaj_wstaw_repo_url>
+  containers:
+  - name: app
+    image: httpd:2.4.47
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: git
+  volumes:
+  - emptyDir: {}
+    name: git
