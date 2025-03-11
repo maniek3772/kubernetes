@@ -1,0 +1,24 @@
+Od kodu do Kubernetes
+
+
+Frontend | Kod źródłowy -> Dockerfile -> Docker image -> Container Registry
+
+Backend | Kod źródłowy -> Dockerfile -> Docker image -> Container Registry
+
+
+Na etapie kodu źródłowego trzeba ustalić jak komponenty będą się ze sobą komunikować - najczęściej HTTP/TCP
+
+W Dockerfile trzeba wiedzieć czego potrzeba żeby uruchomić aplikacje
+
+Dockerfile -> Docker image ogarnia CI - Continuous Integration
+
+W Docker image trzeba wiedzieć czy obraz pozwala na uruchomienie kontenera z parametrami
+
+W container registry trzeba wiedzieć czy jest odpowiednie wersjonowanie i czy można sprawnie nimi zarządzać
+
+Contaniner Registry -> Kubernetes ogarnia CD - Continuous Delivery
+
+Deployment w Kubernetes - trzeba wiedzieć: 
+- ile instancji ma mieć aplikacja
+- jaka ma być konfiguracja aplikacji
+- co powinno się wybrać DaemonSet czy StatefulSet

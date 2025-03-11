@@ -1,0 +1,28 @@
+CNCF - Cloud Native Computing Foundation - powstała z ramienia Linux Foundation - ma na celu rozwój technologii kontenerowych. Niezależna organizacja rozwijana przez społeczność i duże firmy Google, Microsoft, Intel, Vmware ...
+Powstała w 2015 razem z opublikowaniem Kubernetes.
+Zajmuje się certyfikacją z Kubernetes.
+
+Technologie rozwijające się wokół Kubernetes
+- containerd, CoreDNS, Envoy, etcd, Fluentd, Harbor, Helm, Jaeger, Open Policy Agent, Prometheus, Rook, TiKV, TUF, Vitess, Argo, Buildpacs, CloudEvents, CNI, Contour, Cortex, CRI-O, Dragonfly, Emissary-ingress, Falco, Flux, gRPC, KubeEdge, Linkerd, NATS
+
+
+CNCF - proces inkubacji i graduacji
+1. Sandbox - zgłoszenie propozycji. Spełnić zasady Code of Conduct (zasady etyki i moralności), IP Policy (licencja Apache 2.0)
+
+2. Inkubacja 
+- wszystkie wymagania z Sandbox. 
+- Udokumentowane użycie na produkcji prze minimum 3 niezależnych użytkowników (firmy, które nie dostarczają/sprzedają usług Cloud-Native). 
+- Posiadanie kilku osób zatwierdzających nowe funkcjonalności tworzone przez kontrybutorów. 
+- Wykazanie, że projekt się rozwija
+- Wersjonowanie
+- Udokumentowany proces zgłaszania incydentów bezpieczeństwa oraz opis w jaki sposób podatności będą usuwane
+- Przynajmniej jedna publiczna implementacja tego projektu
+
+3. Graduacja
+- spełnione wszystkie wymagania dla fazy Inkubacji
+- kilk osób zatwierdzających nowe funkcjonalności tworzone przez kontrybutorów z minimmum dwóch organizacji
+- otrzymanie odznaki Core Infrastructure Initative
+- przeprowadzony audyt bezpieczeństwa
+- zdefiniowany proces zarządzania i utrzymywania projektu oraz zarządzających nim osób
+- posiadanie publicznej listy organizacji wykorzystującej ten projekt
+- oficjalna zgoda Komitetu Nadzoru Technicznego CNCF na dołączenie do fazy graduacji

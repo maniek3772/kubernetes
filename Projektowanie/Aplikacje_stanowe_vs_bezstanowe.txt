@@ -1,0 +1,47 @@
+Kontenery początkowo zostały stworzone z myślą o aplikacjach bezstanowych (Docker 2013 rok).
+Podobnie Kubernetes - jego początki to nastawienie na aplikacje bezstanowe
+
+Ale obecnie w Kubernetes da się uruchamiać aplikacje stanowe (np. StatefulSet)
+
+
+Stateless - bezstanowe
+- brak sesji
+- brak logowania
+- brak koszyka zakupowego
+- statyczna zawartość
+
+Statefull - stanowe
+- sesje
+- logowanie
+- koszyki zakupowe
+- dynamiczna zawartość
+
+
+Wdrożenia w Kubernetes
+- aplikacje bezstanowe
+  + domyślnie przy pomocy ReplicaSet
+- aplikacje stanowe
+  + domyślnie przy pomocy StatefulSet - specjalny mechanizm tworzenia podów
+
+W Kubernetes bezstanowość to:
+- brak informacji o poprzedniej transakcji jaką wykonała aplikacja
+- każda transakcja wykonywana tak samo, jakby była wykonana po raz pierwszy
+
+Przykład - frontend do wyszukiwarki www. Wpisujesz pytanie - wypluwa odpowiedź. Jak nie działa to restart aplikacji albo wysyłasz drugie zapytanie.
+
+Nie zawsze bezstanowość jest jednoznaczna
+
+Przykład - aplikacja frontendowa (typu SPA) zapisująca stan w przeglądarce np. cookies czy local storage
+ - co się wydarzy jeśli kontener zostanie zrestartowany?
+ - co się wydarzy jeżeli zostanie utworzony nowy pod, bo poprzedni przestał działać?
+ - co się wydarzy jeżeli użytkownik dostanie odpowiedź od innego poda niż za pierwszym razem?
+
+
+
+Aplikacje stanowe
+- wyzwania (CAP) dla baz danych:
+  + spójność (consistency)
+  + dostępność (availability)
+  + tolerancja błędów (partition tolerance)
+
+Przykład: Baza działająca na 3 podach

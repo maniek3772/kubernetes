@@ -1,0 +1,49 @@
+Zapoznać się z The Twelve-factor App
+https://12factor.net
+
+The Twelve Factors
+
+1. Codebase (wszystko w kodzie np. obraz budowany na podstawie Dockerfile trafia do Container Registry, a później do klastra Kubernetes)
+2. Dependencies
+3. Config (konfiguracja za pomocą zmiennych środowiskowych np. adres URL do backendu ustawiany przez zmienną środowiskową. Możliwość sterowania w zależności od środowiska [dev, test, prod])
+4. Backing services (zapis danych w zewnętrznej usłudze np. sesje użytkowników przechowywane nie w pamięci aplikacji [.Net, Java, NodeJS] ale na zewnątrz [np Redis Cache])
+5. Build, release, run
+6. Processes
+7. Port binding
+8. Concurrency
+9. Disposability
+10. Dev/prod parity
+11. Logs (logi jako strumień danych np. kontener loguje na STDOUT/STDER. Logi mogą być wciągnięte przez dowolny system: Splunk, Elasticsearch)
+12. Admin processes
+
+
+Opcje tworzenia aplikacji:
+
+Opcja 1. Lift and shift - spakowanie istniejącej aplikacji monolitycznej do kontenerów 1:1
+
+Opcja 2. Refaktoring - czyli dekompozycja monolitu na coś co będzie skalowalne
+
+  2.1 Kontenery w lokalnym środowisku
+      - Dockerfile
+      - docker-compose
+  2.2 Stopniowa adaptacja do Twelve-Factor App
+      - podnoszenie zależności z pomocą managerów (np. package.json)
+      - zamiast konfiguracji w plikach, konfiguracja w zmiennych środowiskowych
+      - jakiekolwiek dane od których zależy aplikacja wyniesione poza aplikacje do zewnętrznych usług (sekrety-KeyVault, sesje-Redis, danye-MongoDB)
+  2.3 Prosty proof of concept
+      - podstawowa aplikacja w tej samej technologii (bez wszystkich zależności projektu)
+      - budowanie obrazów (i publikowanie ich w repo), prosty deployment, podstawowe koncepcje: Pod, Services
+  2.4 Interacyjne dodawanie nowych warstw do projektu
+      - sprawdzenie co działa, co nie
+      - sprawdzenie czego brakuje
+      - bardziej zaawansowany deployment
+  2.5 Wydzielenie komponentów
+      - np. przeniesienie uwierzytelniania do osobnego kontenera
+      - statyczne pliki serwowane z zewnętrznego storage przez dedykowany kontener
+  2.6 Testy i bezpieczeństwo całego rozwiązania
+      - testowanie obciążenia
+      - testowanie podatności na błędy
+      - audyt bezpieczeństwa
+      - skanowanie klastra
+
+Opcja 3. Greenfield - zaprojektowanie od 0

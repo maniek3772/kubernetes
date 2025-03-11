@@ -1,0 +1,27 @@
+Cloud-Native to podejście do wytwarzania nowych aplikacji, które działają szybko i wydajnie, niemalże przy zerowym czasie niedostępności podczas wdrażania nowych wersji - jednocześnie mogąc działać zarówno w chmurze publicznej, prywatnej czy hybrydowej.
+
+Podejście do budowania aplikacji wykorzystując benefity tego co oferuje: chmura, kontenery, różnego rodzaju API z pominięciem tego gdzie finalnie wyląduje aplikacja.
+
+
+Aplikacje tradycyjne vs Aplikacje Cloud Native
+
+Tradycyjne aplikacje 
+- są zależne od środowiska na którym zostały wdrożone:
+  + system operacyjny
+  + odpowiednie sterowniki
+  + zależności aplikacji
+  + konfiguracja
+- są to najczęściej duże, monolityczne systemy, które ciężko się skaluje i trudniej nimi zarządza
+
+Aplikacje Cloud Native 
+- działają niezależnie od środowiska, komunikując się z dostawcą infrastruktury - najczęściej poprzez API
+- zwykle system składający się z wielu mikroserwisów lub komponentów
+
+
+Cloud Native
+- kontenery - uruchomienie aplikacji w dowolnej infrastrukturze
+- wzorce - Twelve-Factor App
+- orkiestracja kontenerów
+- mikroserwisy
+- usługi backendowe (bazy danych, cache, kolejki, monitoring, analityka)
+- automatyzacja (klasyczne CI/CD oraz GitOps)

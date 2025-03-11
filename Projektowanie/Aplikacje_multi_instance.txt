@@ -1,0 +1,28 @@
+Aplikacja multi-instance
+
+aby wykorzystać skalowanie w Kubernetes aplikacja musi być odpowiednio zaprojektowana
+
+Jedna z zasad 12 Factor Apps mówi
+
+VI. Procesy
+"Jakiekolwiek dane wymagające zapisu powinny być przechowywane na zewnątrz: w dedykowanej usłudze - najczęściej będącą bazą danych"
+
+
+Gdy jest wiele instancji to lepiej aplikacje stanowe czy bezstanowe??
+
+W obu przypadkach to możliwe, ale aplikacje bezstanowe łatwiej się skalują.
+
+Kubernetes dostarcza mechanizmy na działanie aplikacji w trybie multi-instance:
+- aplikacje bezstanowe
+  + ReplicaSet
+  + DaemonSet
+
+- aplikacje stanowe
+  + StatefulSet
+
+
+Zanim zacznie się myśleć o migracji do Kubernetes dobrze jest sprawdzić czy aplikacja może działać w trybie multi-instance poza Kubernetes lub co można zrobić, żeby to było możliwe.
+
+Dla przykładu można zrobić 2 maszyny wirtualne z aplikacją i load balancerem przed tymi maszynami wirtualnymi
+
+
