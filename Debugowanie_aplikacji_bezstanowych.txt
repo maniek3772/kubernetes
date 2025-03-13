@@ -1,0 +1,37 @@
+# Sprawdzenie statusu deploymentu - ilości podów
+kubectl get deploy
+
+# Sprawdzenie informacji na temat deploymentu
+kubectl describe deploy <nazwa_deploymentu>
+
+# Sprawdzenie jakie mamy ReplicaSet - jeżeli pody były by dobrze wdrozone to powinien być status READY
+kubectl get rs
+
+# Wyświetlenie informacji na temat ReplicaSet
+kubectl describe rs <nazwa_ReplicaSet>
+
+# Wyświetlenie podow
+kubectl get pods
+
+# Sprawdzenie szczegółów pod-a
+kubectl describe pod <nazwa_poda>
+
+
+# Sprawdzenie dlaczego pod się restartuje
+kubectl get pod <nazwa_poda> -o wide
+
+info będzie w sekcji containerStatuses, a następnie lastState.
+
+
+
+
+Debugowanie CrashLoopBackOff
+Jeżeli podczas kubectl get pods rośnie liczba w kolumnie RESTARTS to mamy właśnie ten błąd
+
+Sprawdzamy poda
+kubectl describe pod <nazwa_poda>
+
+Szukamy wiersza Reason. Tam powinna być wskazówka co jest nie tak.
+Warto popatrzeć na Exit Code. Jeżeli jest równy 1 to znaczy, że to jest problem z aplikacją.
+
+Można uruchomić sobie testowo ten obraz z aplikacją w dockerze i sprawdzić czy się uruchamia.

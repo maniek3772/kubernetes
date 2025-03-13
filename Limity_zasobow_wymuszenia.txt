@@ -1,0 +1,70 @@
+Za przydzielanie podów do worker node odpowiada Scheduler, który znajduje się w Control Plane
+
+Jak działa Scheduler?
+1. Filtrowanie - jakie node nadają się dla podów
+   - czy jest wystarczająca ilość zasobów (resource request)
+
+2. Ranking - przydzielanie "punktów" dla wybranych w fazie filtrowania node, aby wybrać najbardziej optymalne dla danych podów
+
+CPU Unit == 1vCPU/Core
+100m == 0.1 --> 10% czasu jednego procesora / jednej jednostki
+
+2 Core == 2000m
+
+220Mi == 220 mega bajtów
+1Gi == 1 gigabajt
+
+Zasoby przydziela się w sekcji container:
+
+Przykład:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-api
+spec:
+  selector:
+    ....
+  template:
+    ....
+    spec:
+      containers:
+      - name: web-api
+        image: web-api
+        resources:       
+          requests:  # wymuszenia zasobów - info dla schedulera ile minimalnie zasobów potrzebuje kontener
+            cpu: 100m
+            memory: 220Mi
+          limits:
+            cpu: 200m
+            memory: 450Mi
+
+
+Limity zasobów:
+- zabezpieczenie przed niepowołanym skonsumowaniem zasobów sprzętowych
+- gdy kontener przekroczy zadany limit, proces kontenera zostaje zabity
+- jeżeli tego nie zrobimy to kontener może:
+  + wyczerpać wszystkie dostępne zasoby
+  + wyczerpać więcej zasobów niż jest dostępne na nodzie co może spowodować zabijanie procesów systemowych na nodzie
+
+
+Jeżeli nie określi się limitów:
+- kontener może zużyć tyle zasobów ile jest na nodzie
+- można też określić limity dla danego namespace, wtedy kontener może zużyć max jakie zostało określone w limicie dla całego namespace
+
+
+UWAGA! 
+Zawsze należy określić request i limit
+- gdy określamy tylko limit Kubernetes automatycznie przypisze request==limit, co może mieć wpływ na działanie schedulera. Ma to zastosowanie zarówno dla memory (RAM) jak i CPU.
+- limit musi być większy niż request
+
+
+Jeżeli podczas sprawdzenia poleceniem
+
+kubectl get pod <nazwa_poda> --namespace=<nazwa_namespace>
+
+wystąpi CrashLoopBackOff sprawdzamy głębiej poleceniem
+
+kubectl describe pod <nazwa_poda> --namespace=<nazwa_namespace>
+
+szukamy wiersza reason i tam będzie OOMKilled (OutOfMemory)

@@ -1,0 +1,18 @@
+1. Dąż do zamysłu aplikacji Cloud-Native (12 Factor App)
+2. Używaj podejścia deklaratywnego - kubectl apply -f deployment.yml
+3. Zawsze określaj konkretną wersję obrazu
+- bo jak jest latest to nie wiesz jaką wersję masz na produkcji (i jest to antywzorzec)
+- trudniej o rollback
+4. Określaj zawsze Liveness / Readiness
+5. Określaj limity i wymuszenia zasobów (requests / limits)
+6. Wdrażając wersję nie rób tego przez kubectl edit/patch
+- przechowuj konfigurację w kodzie [w repozytorium] (łatwiej o rollback)
+- wykorzystaj Helm
+- wykorzystaj GitOps
+7. Grupuj powiązane ze sobą obiekty do jednego pliku np. service + deployment
+8. Używaj odpowiednich etykiet i adnotacji
+- https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels
+9. Logi w jednym miejscu oraz monitoring
+- wdrożenie systemu agregowania logów np. FluentD + ElasticSearch
+- wdrożenie monitoringu np. Prometheus + Grafana
+10. Osobny produkcyjny klaster

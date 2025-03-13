@@ -1,0 +1,49 @@
+Rolling update jest domyślną strategią w Kubernetes. Powoduje on, że podczas aktualizacji do nowej wersji jest zerowy czas niedostępności dla aplikacji.
+
+
+Przykład Rolling Update:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollingupdate-backend-deploy
+spec:
+  selector:
+    matchLabels:
+      name: rollingupdate-backend
+  replicas: 7
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1  # ile podów z nową wersją można dodać w tym samym czasie
+      maxUnavailable: 1  #ile starych podów może być niedostępnych podczas update do najnowszej wersji
+  template:
+    metadata:
+      labels:
+        name: rollingupdate-backend
+    spec:
+      containers:
+      - name: backend
+        image: ks/projectapp-backend:3.0
+        ports:
+        - containerPort: 8080
+
+
+
+# Sprawdzenie statusu Deploymentu
+kubectl get deploy
+
+# Polecenie odpytujące co sekundę o listę podów na klastrze
+watch -n 1 kubectl get pod 
+
+# Polecenie pokazujące historię zmian deploymentu
+kubectl rollout history deployment/<nazwa_deploymentu>
+
+# Wyświetlenie szczegółow dla danej rewizji
+kubectl rollout history deployment/<nazwa_deploymentu> --revision=<numer_rewizji>
+
+
+
+
+
+

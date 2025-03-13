@@ -1,0 +1,98 @@
+ReplicaSet jest obiektem, który dba o określoną ilość podów. Odpowiada także za skalowanie, jeżeli dorzucimy ilość podów.
+
+Przykład ReplicaSet
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-webapp
+  labels:
+    app: ks-webapp
+spec:
+  replicas: 3
+  selector:          # tu jest to samo co w labels w POD
+    matchLabels:
+      app: ks-webapp
+
+
+Przykład Poda którym opiekuje się ReplicaSet
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp1
+  labels:     # tu jest to samo co w ReplicaSet w SELECTOR
+    app: ks-webapp
+
+
+
+Scheduler decyduje, gdzie mają zostać utworzone Pody na worker nodach.
+
+
+ReplicaSet panuje nad różną ilość podów na różnych nodach
+
+DaemonSet został stworzony do uruchamiania jednego Poda na danym Node (jest to domyślne zachowanie. Można je jednak zmienić określając Node Affinity, Tolerations lub Node Selector). 
+Gdy dodajemy nowe nody do klastra to DaemonSet automatycznie utworzy na nich pody
+
+
+Przykład DaemonSet
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-daemonset
+  namespace: kube-system
+  labels:
+    ks-app: fluentd
+spec:
+  selector:
+    matchLabels:
+      ks-app: fluentd
+  template:
+    metadata:
+      labels:
+        ks-app: fluentd
+
+
+Przykład jeżeli chcemy uruchomić DaemonSet tylko na master nodach 
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-daemonset
+  namespace: kube-system
+  labels:
+    ks-app: fluentd
+spec:
+  selector:
+    matchLabels:
+      ks-app: fluentd
+  template:
+    metadata:
+      labels:
+        ks-app: fluentd
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+
+Zastosowania DaemonSet - zwykle to narzędzia wspomagające działanie aplikacji
+1. Agent zbierający logi (fluentd, logstash)
+2. Agent rotacji/czyszczenia logów
+3. Agent monitoringu aplikacji (Prometheus Node-Exporter)
+4. Agent wykrywający problemy w nodach (node-problem-detector)
+
+
+DaemonSet nie jest bezpośrednim mechanizmem do wdrażania aplikacji bezstanowych, ale może być dodatkiem (np. monitoring, logi)
+
+
+PODSUMOWANIE
+- ReplicaSet - zadba o określoną ilość podów, nie ważne na jakim nodzie. Wykorzystywana do wdrażania aplikacji biznesowych.
+- DaemonSet - uruchamia jeden pod na każdym node. Wykorzystywany dla narzędzi/usług wspomagających aplikacje biznesowe lub działanie klastra
+
+
+
+
+
+

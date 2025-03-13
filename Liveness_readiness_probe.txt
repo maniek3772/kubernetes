@@ -1,0 +1,144 @@
+Etapy życia Podów
+
+Po zrobieniu Deploymentu poleceniem
+kubecl apply -f deployment.yml
+
+Pody mają statusy:
+- Pending - pod oczekuje na sygnał od Schedulera na jakim nodzie ma zostać utworzony
+- ContainerCreating - pod przypisany do node i uruchamiane są kontenery
+- Running - przynajmniej jeden z kontenerów działa lub jego główny proces startuje/restartuje
+
+
+Warunki podów - Pod conditions
+
+można je sprawdzić poprzez polecenie:
+kubectl describe pod <nazwa_poda>
+
+są to:
+- PodScheduled - pod przypisany do node
+- Initialized - InitContainers zostały uruchomione
+- ContainersReady - wszystkie kontenery działają
+- Ready - aplikacja działa i jest gotowa przyjąć ruch użytkowników
+
+
+Czy to że kontener działa == aplikacja działa?
+
+Domyślnie Kubernetes uznaje aplikacje jako "gotową" czyli Ready gdy główny proces kontenera wystartował i działa poprawnie.
+
+UWAGA!
+Nie zawsze działający proces oznacza, że aplikacja jest gotowa by przyjmować ruch użytkowników. 
+
+Przykład: podczas pierwszego uruchomienia aplikacji potrzebna jest synchronizacja (np. z zewnętrznym systemem) co zajmuje od 10 sekund do 3 minut. Kubernetes po starcie głównego procesu uznaje, że aplikacja działa, jednak ruch użytkowników może być przyjmowany czasami dopiero po 3 minutach.
+
+
+
+
+Readiness Probe - upewnienie się, ze aplikacja jest gotowa aby przyjąć ruch użytkowników. W aplikacjach webowych określamy endpoint na którym zwracany jest rezultat czy aplikacja jest gotowa np.:
+- HTTP /api/ready
+- TCP - 5432
+- Exec
+
+Jeżeli warunek jest spełniony Pod przechodzi w Ready, jeżeli nie to jest ContainersReady
+
+Readiness Probe określa się dla każdego kontenera. Już na etapie projektowania aplikacji warto zadbać, żeby był taki endpoint, który określa czy aplikacja działa.
+
+Dlaczego warto?
+- upewniamy się, że aplikacja jest gotowa na przyjmowanie ruchu od użytkowników
+- gdy mamy działające pody i chcemy dołożyć kolejne, ruch będzie przekierowany dopiero, gdy aplikacja faktycznie będzie gotowa
+
+
+Przykład:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-api-deploy
+spec:
+  selector:
+    matchLabels:
+      name: web-api
+  template:
+    metadata:
+      labels:
+        name: web-api
+    spec:
+      containers:
+      - name: webapi
+        image: web-api:1.0
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/api/ready"
+            port: 80
+
+
+
+UWAGA!!
+Działający proces nie zawsze oznacza działającą aplikację.
+Co w sytuacji gdy proces kontenera działa, ale aplikacja nie obsługuje ruchu użytkowników?
+
+Zazwyczaj podczas projektowania aplikacji robi się endpoint HTTP, który można odpytywać cyklicznie /health lub /healtz
+
+W Liveness probe można użyc testów:
+- HTTP - wykonuje żądanie HTTP GET poprzez odpowiednie IP, port i ścieżkę. Test uznawany za pomyślny gdy kod jest >= 200 i mniejszy niż 400
+- TCP - wykonywany jest test połączenia TCP na IP Poda i odpowiedni port. Test jest uznawany za pomyślny, gdy port jest otwarty 
+- Exec - wykonuje się określoną komendę wewnątrz kontenera. Test uznawany za pomyślny, gdy komenda zwróci Exit Code 0
+
+WAŻNE!
+Liveness Probe definiuje się dla każdego kontenera osobno.
+
+Przykład Liveness Probe:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-api-deploy
+spec:
+  selector:
+    matchLabels:
+      name: web-api
+  template:
+    metadata:
+      labels:
+        name: web-api
+    spec:
+      containers:
+      - name: webapi
+        image: web-api:1.0
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/health"
+            port: 80
+
+
+Gdy nie określi się livenessProbe oraz główny proces kontenera zostanie zakończony, kubelet podejmie odpowiednią akcję zgodnie z polityką restartów.
+
+Gdy określi się livenessProbe i test nie przejdzie poprawnie, pomimo tego, że główny proces kontenera będzie działać poprawnie - kubelet podejmie odpowiednią akcję zgodnie z polityką restartów (najczęściej jest to restart kontenera)
+
+Można sprawdzić status Liveness, Readiness poprzez polecenie:
+kubectl describe pod <nazwa_poda>
+
+Informacje są w linijkach:
+Liveness:
+Readiness:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

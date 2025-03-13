@@ -1,3 +1,7 @@
+# Sprawdzenie wyniku końcowego dowolnego polecenia kubectl bez tworzenia zasobów w klastrze
+Wykorzystuje się do tego flagę --dry-run
+
+
 # Uruchomienie pod-a
 kubectl apply -f pod.yml
 
@@ -25,6 +29,9 @@ kubectl logs -f <nazwa_poda> <nazwa_kontenera>
 
 # Zrzucenie aktualnej konfiguracji poda do pliku YAML
 kubectl get pod <nazwa> -o yaml > <nazwa>-snapshot.yml
+
+# Tworzenie namespace
+kubectl create namespace <nazwa_namespace>
 
 # Wyświetlenie wszystkich obiektów w Kubernetes (w bieżącym namespace)
 kubectl get all
@@ -64,6 +71,27 @@ kubectl get pvc
 
 # sprawdzenie jakie Storage Class są na klastrze
 kubectl get sc
+
+# Wyświetlenie listy podów z podziałem na poszczególne node
+kubectl get pod -o=custom-columns=NODE_NAME:.spec.nodeName,POD_NAME:.metadata.name --all-namespaces
+
+# Wyświetlenie jakie zasoby sprzętowe zużywane są przez pody w namespace
+kubectl top pod --namespace=<nazwa_namespace>
+
+# Sprawdzenie statusu Deploymentu
+kubectl get deploy
+
+# Polecenie odpytujące co sekundę o listę podów na klastrze
+watch -n 1 kubectl get pod
+
+# Polecenie pokazujące historię zmian deploymentu
+kubectl rollout history deployment/<nazwa_deploymentu>
+
+# Wyświetlenie szczegółow dla danej rewizji
+kubectl rollout history deployment/<nazwa_deploymentu> --revision=<numer_rewizji>
+
+#Przekierowanie portów z kontenera na hosta
+kubectl port-forward <nazwa_poda> 5601:5601
 
 
 
