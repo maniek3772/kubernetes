@@ -1,0 +1,61 @@
+Mechanizm Kubernetes Operator - przepis jak wdrożyć niestandardową usługę z odpowiednią konfiguracją i jak nią później zarządzać.
+
+Kubernetes operator automatyzuje cały cykl życia aplikacji, którą zarządza:
+- jak stworzyć klaster np MySQL składający się z 3 replik
+- jak uruchomić klaster
+- jak synchronizować dane
+- jak aktualizować klaster
+
+
+Aplikacje stanowe najczęściej składają się z wielu ściśle powiązanych ze sobą obiektów.
+Operator agreguje wiele standardowych obiektów (Service, Deployment, StatefulSet) tworząc nowy obiekt.
+
+Operator Hub - są tam przykłady gotowych operatorów
+https://operatorjub.io
+
+
+- przeznaczony dla aplikacji stanowych (StatefulSet) zawierających skomplikowaną logikę (Kubernetes nie jest w stanie zarządzać każdym typem aplikacji stanowych)
+- dla aplikacji stanowych potrzeba dużego narzutu konfiguracji (np. która replika ma być master, a która slave; jak repliki mają się ze sobą komunikować)
+
+
+
+Kubernetes Operator, a CRD
+- Kubernetes operator definiujemy za pomocą rozszerzenia CRD (Custom Resource Definition), dzięki którym możemy tworzyć nowe typy obiektów w Kubernetes API
+- Po wdrożeniu można odpytywać/modyfikować go za pomocą kubectl
+
+Przykład:
+
+apiVersion: apiextension.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: postgresql.acid.zalan.do
+spec:
+  group: acid.zalan.do
+  names:
+    kind: postgresql
+    listKind: postgresqlList
+
+
+UWAGA! Kubernetes Operator != CRD. 
+- Operator wykorzystuje możliwości CRD
+- CRD do mechanizm do tworzenia własnych obiektów i można go wykorzystać  do różnych celów - nie tylko do tworzenia operatorów
+
+
+
+Jak powstaje Kubernetes Operator?
+- można tworzyć samodzielnie korzystając z frameworków:
+  + Charmed Operator Framework
+  + kubebuilder
+  + KUDO (Kubernetes Universal Declarative Operator)
+  + Operator Framework
+
+
+
+Custom Resource Definition (CRD)
+- po wdrożeniu CRD (kubectl apply -f crd-definition-file.yml) w Kubernetes API tworzy się nowa ścieżka (REST) dla każdej wersji jaką zdefiniujemy. Dzięki temu można korzystać i odpytywać się przez kubectl
+
+
+
+
+
+

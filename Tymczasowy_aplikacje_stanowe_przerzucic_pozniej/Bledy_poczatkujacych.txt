@@ -1,0 +1,10 @@
+Warto pamiętać, że Kubernetes został stworzony z myślą o aplikacjach bezstanowych.
+
+Dopiero w wersji 1.5 Kubernetes StatefulSet zostało wprowadzone jako "beta", a Kubernetes Operator był jeszcze później.
+
+
+Błędy:
+- myślenie, że aplikacje/usługi posiadające stan zostały przygotowane z myślą o Kubernetes
+- decydując się na wdrożenie aplikacji/usługi posiadającej stan myślenie, że StatefulSet załatwi za nas wszystko
+- myślenie, że bazy danych w Kubernetes to prosty temat
+- myślenie o aplikacjach/usługach przechowujących stan w ten sam sposób jak o aplikacjach bezstanowych

@@ -1,0 +1,15 @@
+Bazy danych
+
+- Wyzwania (CAP)
+  + Spójność danych (consistency)
+  + Dostępność (availability)
+  + Tolerancja błędów (partition tolerance)
+
+
+Przykładem rozwiązania, że się da jest Postgres Operator by Zalando.
+
+Czy warto robić bazy danych w kontenerach/Kubernetes?
+
+Jeśli jest konkretny powód, ma się wiedzę jak to zrobić dobrze i ma się dobry plan przywracania bazy danych to można :) 
+
+W chmurze dla większości przypadków prościej jest skorzystać z managed database - brak zmartwień o wysoką dostępność, skalowanie, utrzymanie itd

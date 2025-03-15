@@ -1,0 +1,10 @@
+Wdrożenie aplikacji poprzez StatefulSet tak jakby była wdrożona jak DaemonSet - czyli po jednym podzie na workernode
+
+Affinity
+
+AntyAffinity - informacja do schedulera, aby nie umieszczał więcej niż jednego poda z określoną etykietą na jednym worker node np.
+selector: 
+  matchLabels:
+    app: redis-cluster
+
+Node Affinity - nadawanie etykiet node i umieszczać pody na specyficznych node. Normalnie scheduler o tym decyduje

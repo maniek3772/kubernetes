@@ -1,0 +1,16 @@
+NIE przechowywać plików na dyskach twardych node.
+
+Persistent Volumes zmapowane na zewnętrzny storage.
+
+- Network Storage
+  + NFS
+  + GlusterFS
+
+
+- Cloud Storage
+  + AWS EBS
+  + Azure Files
+  + GCE Persistent Disk
+  + etc
+
+Zaleca się dynamiczne tworzenie PersistenVolumes z wykorzystaniem StorageClass

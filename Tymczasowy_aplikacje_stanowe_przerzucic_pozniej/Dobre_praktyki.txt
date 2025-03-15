@@ -1,0 +1,18 @@
+Dobre praktyki:
+- używanie podejścia deklaratywnego 
+- limity i wymuszenia zasobów (cpu.request, cpu.limit, memory.request, memory.limit)
+- Liveness / Readiness
+- określenie konkretnej wersji obrazu (docker image)
+- ZEWNĘTRZNY STORAGE
+  + Chmura (GCE Persistent Disks, Azure Files, Azure Disks, AWS EBS)
+  + On-prem (NFS, GlusterFS)
+- dynamicznee tworzenie volumenów za pomocą Storage Class:
+  + tworzenie własnych lub wykorzystanie istniejących Storage Class
+  + własne Storage Class mogą być opcją do tworzenia różnych klas storage (Basic, Standard, Premium)
+- CSI storage drivers == przyszłość
+  + osobne zarządzanie sterownikami w Kubernetes (CSI drivers/plugins)
+  + warto śledzić rozwój CSI oraz pluginów
+- Kubernetes Operator
+  + paczka obiektów która ułatwia wdrażanie i zarządzenie aplikacjami stanowymi (open-source - warto sprawdzić czy projekt jest rozwiajany i ilu ma kontrybutorów) [https://operatorhub.io]
+
+
