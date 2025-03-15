@@ -1,0 +1,29 @@
+Linux containers działają w oparciu o:
+- control groups
+- linux namespaces
+
+Control Groups (cgroups)
+- mechanizm wbudowany w jądro linuxa
+- kontroluje dostęp i przydział procesów do zasobów - CPU, pamięci, dysku (I/O)
+- grupuje procesy
+- nadaje priorytet
+- odpowiada za limitowanie przydziału zasobów CPU, pamięci, dysku (I/O)
+
+
+Linux namespaces, a Kubernetes
+- PID namespace - procesy kontenerów wewnątrz poda są od siebie odizolowane, każdy kontener dostaje PID 1 (można to zmienić spec.shareProcessNamespace: true)
+- Network namespace - każdy pod otrzymuje swój interfejs sieciowy (ip tables, routing tables, adres MAC). Wszystkie kontenery wewnątrz poda współdzielą ten namespace - mogą się komunikować poprzez localhost.
+- Mount namespace - kontenery wewnątrz poda mogą mieć dostęp do tych samych wolumenów (multi-container pod), ale nie mają dostępu do innych wolumenów w innych podach.
+- User namespace - kontenery mogą posiadać różne numery użytkowników (uid) oraz grupy (gid)
+  + Przykład1 - User 1000 w kontenerze może być zmapowany na User 10001 na hoście
+  + Przykład2 - Root w kontenerze zmapowany na nie uprzywilejowanego użytkownika (readonly user) na hoście.
+- Inter-proc comms (ipc) - pozwala procesom wewnątrz kontenera na dostęp do tej samej współdzielonej pamięci (pamięci hosta). Wszystkie kontenery wewnątrz poda współdzielą ten namespace.
+- UTS (uts) - nadaje każdemu kontenerowi nazwę hosta
+
+
+
+Domyślnie kontenery w obrębie poda:
+- współdzielą network namespace
+- współdzielą IPC namespace
+- mogą mieć dostęp do tych samych wolumenów
+

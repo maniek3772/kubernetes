@@ -1,0 +1,80 @@
+1. Capabilities 
+- mechanizm linux, który mogą wykorzystywać kontenery w Kubernetes.
+- w linux można ograniczyć uprawnienia root-a wykorzystując capabilities (np. CAP_CHOWN - pozwala na zmianę właściciela pliku/katalogu dla innego użytkownika lub grupy)
+- pozwalają na:
+  + ograniczenia uprawnień root-a
+  + dodanie uprawnień dla nieuprzywilejowanych użytkowników (non-root)
+
+2. AppArmor
+- Linux Security Module (LMS)
+- zabezpiecza system operacyjny poprzez profile dla pojedynczych aplikacji lub kontenerów
+- domyślny moduł bezpieczeństwa dla dystrybucji: Ubuntu, Debian (od wersji 10), OpenSUSE
+- pozwala kontrolować:
+  + dostęp do plików
+  + dostęp do sieci
+  + wykonanie zadań (chown, setuid)
+
+WAŻNE! Można utworzyć profil dla kontenera - czyli profil dla aplikacji/usługi
+
+3. SELinux (Security Enhanced Linux)
+- mechanizm podnoszący bezpieczeństwo systemów Linux
+- w Kubernetes będzie mieć znaczenie, jeżeli poszczególne nody mają go zainstalowanego/skonfigurowanego
+- operuje na politykach ograniczających dostęp do obiektów w systemie plików
+- w Kubernetes istnieje możliwość wyłączenia lub nadpisania ustawień SELinux
+- według standardów bezpieczeństwa, nie powinno się go wyłączać, a nieodpowiednie zmiany mogą prowadzić do braku izolacji procesu działającego w kontenerze względem procesów hosta
+
+4. Seccomp (Secure Computing)
+- można ogranicznyć wywołania systemowe (syscall)
+- wywołanie systemowe to interfejs pomiędzy procesem, a kernelem. Mogą być ukryte wewnątrz funkcji (np. fork(), kill(), getpid())
+- w Kubernetes:
+  + można skorzystać z domyślnych profilów używanego Container Runtime (np. ContainerD) i aplikować je do podów i kontenerów
+  + można tworzyć własne profile Seccomp
+- dzięki temu można wyłączyć możliwość wykonywania poszczególnych wywołań systemowych w obrębie kontenera
+
+securityContext:
+  seccompProfile:
+    type: Localhost
+    localhostProfile: my-seccomp-profile.json
+
+5. Eskalacja uprawnień (allowPrivilegeEscalation)
+- w linux wywołanie systemowe execve może przydzielić większe uprawnienia dla nowo stworzonego procesu niż procesu rodzica
+- w wersji v3.5 jądra systemu Linux dodano flagę no_new_privs, dzięki której możemy wyłączyć możliwość nadawania większych uprawnień dla nowo tworzonych procesów
+
+W Kubernetes odpowiada temu opcja allowPrivilegeEscalation, która ustawiona na false wyłącza możliwość nadawania większych uprawnień
+
+securityContext:
+  allowPrivilegeEscalation: false
+
+
+6. Privileged Containers
+- obejście aby kontener miał dostęp do zasobów na node:
+  + do interfejsów sieciowych
+  + do sprzętu (hardware)
+- izolacja kontenera od systemu praktycznie nie istnieje
+- w przypadku przejęcia łatwo o wyjście z kontenera i przejęcie hosta
+- w Kubernetes jest to domyślnie wyłączone (privileged: false)
+
+securityContext:
+  privileged: false
+
+
+UWAGA! PRIVILEGED CONTAINER NIE JEST ZALECANE
+
+
+7. System plików kontenera tylko do odczytu (ReadOnlyRootFilesystem)
+- wyłączenie możliwości modyfikacji systemu plików kontenera
+- zgodnie z podejściem Stateless - jakiekolwiek dane powinny być wyniesione poza kontener, a logi przekierowane na STDOUT
+- domyślnie jest to wyłączone (false), dlatego warto to włączyć (true)
+- jeżeli usługa wymaga zapisywania tymczasowych plików - warto rozważyć użycie wolumenu emptyDir i podmontowanie go w pamięci (typ Memory)
+
+securityContext:
+  readOnlyRootFilesystem: true
+
+
+
+Inne opcje mające wpływ na bezpieczeństwo:
+- sysctl - interfejs linux do konfiguracji parametrów jądra systemu
+- katalog /proc - domyślnie (w zależności od container runtime) ten katalog nie jest widoczny z poziomu kontenera (jest maskowany) - nie należy tego zmieniać i należy zostawić jako Default (lub nie dodować tej opcji)
+
+securityContext:
+  procMount: "Default"

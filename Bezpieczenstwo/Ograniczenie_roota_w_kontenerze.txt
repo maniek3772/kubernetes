@@ -1,0 +1,50 @@
+Kontenery domyślnie mogą być uruchomione z prawami roota, dlaczego:
+- powinno się ograniczyć uprawnienia i uruchamiać kontenery zawsze w trybie non-root
+- root w uprzywilejowanym kontenerze (containers[].securitycontext.privileged=true) jest bliski w działaniu do root-a na hoście
+- można pozbyć się roota w definicji poda, a także nadpisać ustawienia na poziomie poszczególnych kontenerów
+
+spec:
+  securityContext:
+    runAsUser: 10000
+    runAsNonRoot: true
+    runAsGroup: 10001
+    fsGroup: 20001 # zmiana właściciela katalogów i plików podmontowanych jako wolumen
+
+Przykład:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-api
+  labels:
+    app: web-api
+spec:
+  selector:
+    matchLabels:
+      app: web-api
+  template:
+    metadata:
+      labels:
+        app: web-api
+    spec:
+      securityContext:
+        runAsNonRoot: true   # Ustawienia dla wszystkich kontenerów
+      containers:
+      - name: web-api-ctr
+        image: ks/web-api:1.0
+      - name: sidecar
+        image: log-agregate
+        securityContext: 
+          runAsNonRoot: false   # Ustawienia na tym poziomie zostaną nadpisane
+
+
+runAsNonRoot - wymusza by proces był uruchomiony jako non-root (ID użytkownika !=0) bez znaczenia jakie konkretne ID
+
+UWAGA!
+Jeśli w obrazie docker image nie ma określonego UID/GID otrzymamy błąd - "container has runAsNonRoot and image has non-numeric user (default), cannot verify user in non-root"
+
+UWAGA!
+Nie zawsze runAsNonRoot rozwiązuje problem
+- czasami ze względu na uprawnienia do plików w kontenerze - proces musi być uruchomiony z konkretnym ID użytkownika/grupy
+- runAsUser/runAsGroup - wymusza uruchomienie procesu w kontenerze z konkretnym ID użytkownika/grupy - ID musi istnieć w obrazie
+
