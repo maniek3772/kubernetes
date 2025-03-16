@@ -1,0 +1,31 @@
+Polityka bezpieczeństwa powstaje aby zapobiec naruszaniu zasad bezpieczeństwa i dobrych praktyk. Można na przykład z góry zablokować możliwość używania nieodpowiedniej konfiguracji.
+
+Jeżeli ktoś będzie chciał utworzyć poda ze złą konfiguracją to dostanie błąd.
+
+Jak tworzyć polityki bezpieczeństwa?
+- Open Policy Agent (OPA) Gatekeeper (https://github.com/open-policy-agent/gatekeeper). Jest to rozwiązanie polecane w dokumentacji Kubernetes. Działa jako Admission Controller.
+
+OPA Gatekeeper to Admission Controller pozwalający na definiowanie własnych polityk, dzięki czemu możemy zabezpieczyć klaster, by był zgodny z dobrymi praktykami.
+
+
+Co to jest Admission Controller?
+- mechanizm pozwalający na przechwycenie żądań skierowanych do apiserver{}
+- może ograniczyć/zablokować tworzenie nowych obiektów np. podów niezgodnych z dobrymi praktykami (validating controller)
+- może zmienić/nadpisać strukturę obiektu zanim zostanie stworzony np. automatycznie wyłączać montowanie sektetów dla Service Account (mutating controller)
+
+
+Gdzie jest ten Admission Controller?
+
+Gdzie jest w apiserver{}?
+- uwierzytelnienie (authentication)  
+- autoryzacja (authorization)
+- Admission Controller
+- Wykonanie żądania (admission)
+
+
+Przykład działania Admission Controller:
+- validating controller
+  + zabroń tworzenia podów z privileged: true
+  + zabroń tworzenia podów które nie mają określonych limitów i wymuszeń (CPU request, limit; Memory request, limit)
+- mutating controller
+  + zaktualizuj pole przed utworzeniem poda (automountServiceAccountToken: false)

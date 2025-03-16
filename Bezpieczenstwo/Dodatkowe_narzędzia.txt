@@ -1,0 +1,36 @@
+Podczas administrowania klastrem i jego utrzymania warto zwrócić uwagę na:
+- RBAC
+- bezpieczeństwo klastra
+- bezpieczeństwo poszczególnych komponentów:
+  + apiserver{}
+  + etcd
+
+Informacje jak zabezpieczyć klastry można znaleźć w e-book CIS Kubernetes Benchmark
+
+Narzędzia przydatne w bezpieczeństwie klastrów od strony administracyjnej:
+1. kube-bench - skaner walidujący klaster i jego konfigurację zgodnie z rekomendacjami CIS Kubernetes Benchmark
+   + https://www.cisecurity.org/benchmark/kubernetes
+   + https://github.com/aquasecurity/kube-bench
+2. kube-hunter - może sprawdzić klastry "z zewnątrz" np. otwarte porty itp.
+   + https://kube-hunter/aquasec.com
+
+
+Narzędzia przydatne w bezpieczeństwie klastrów od strony developerskiej
+1. kubesec - skaner walidujący konfigurację plików YAML
+   + kubecec scan k8s-deployment.yaml
+   + https://kubesec.io
+2. kubeaudit - skanuje pliki YAML w poszukiwaniu nieodpowiedniej konfiguracji. Dodatkowo ma opcję "autofix", która automatycznie naprawia podatności bezpieczeństwa w plikach YAML.
+   + kubeaudit autofix -f "/path/to/manifest.yml" -o "/path/to/fixed"
+   + https://github.com/Shopify/kubeaudit
+
+Inne rozwijające się narzędzia:
+- Kube-score https://github.com/zegl/kube-score
+- Krane https://github.com/appvia/krane
+- Kubi-scan https://github.com/cyberark/KubiScan
+
+
+Dodatkowe narzędzie: kubescape https://github.com/armosec/kubescape
+
+sprawdza czy Kubernetes jest skonfigurowany bezpieczenie zgodnie z definicją "Kubernetes Hardening Guidance by to NSA and CISA"
+
+https://www.nsa.gov/News-Features/Feature-Stories/Article-View/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/

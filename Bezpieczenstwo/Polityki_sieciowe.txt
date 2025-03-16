@@ -1,0 +1,53 @@
+Networking w k8s
+- każdy pod otrzymuje unikalny adres IP
+- wszystkie pody mogą się komunikować ze sobą. Nawet jeśli są w różnych namespace
+
+Z czasem może pojawić się potrzeba ograniczenia komunikacji pomiędzy podami
+- izolacja środowisk aplikacji przez namespace (Dev, Stage)
+- hostowanie aplikacji dla kilku różnych klientów (multi-tenant) na tym samym klastrze (klient-a-namespace, klient-b-namespace)
+
+Po to wymyślono Network Policy:
+- ograniczenie ruchu przychodzącego do podów (ingress)
+- ograniczenie ruchu wychodzącego z podów (egress)
+- ograniczenie ruchu tylko dla określonych podów (z określonymi etykietami) lub dla całego namespace
+
+
+Jeżeli już jest wdrożony deployment to trzeba go usunąć. Włączyć politykę i uruchomić deployment jeszcze raz. 
+
+
+Przykład polityki wyłączającej ruch z innych namespace
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-a
+  labels:
+    client: "client-a"   $ TO WAŻNE bez tego nie zadziała
+
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: ns-a
+  name: deny-traffic-to-ns-a-from-other-namespaces
+spec:
+  podSelector:
+    matchLabels:
+  ingress:    # zezwala na ruch TYLKO z podów które znajdują się w namespace ns-a
+  - from:
+    - podSelector: {}
+    - namespaceSelector:   $ TO WAŻNE bez tego nie zadziała
+        matchLabels:
+          client: "client-a"
+
+
+
+UWAGA!
+Aby zdefiniowane polityki zostały wdrożone należy włączyć ich wymuszanie na poziomie CNI Plugin.
+
+
+# Wyświetlenie wdrożonych polityk bezpieczeństwa
+kubectl get networkpolicy --all-namespaces
+
+
+
+

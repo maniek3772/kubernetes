@@ -1,0 +1,17 @@
+Chodzi głównie o wykrycie ustawień związanych z bezpieczeństwem oraz konfiguracją kontenerów:
+- ustawień roota w kontenerze
+- niezalecanych capabilities — np. SYS_ADMIN
+- privileged: true
+- braku wymuszeń i limitów CPU, RAM
+
+Narzędzia które mogą pomóc w wykrywaniu konfiguracji podatnej na atak w plikach YAML.
+
+- kubesec https://kubesec.io/
+- Kubeval https://github.com/instrumenta/kubeval/
+- kube-score https://github.com/zegl/kube-score
+- polaris https://github.com/FairwindsOps/polaris
+
+Przykład jak można wyjść z kontenerów:
+- https://www.tigera.io/blog/cve-2021-31440-kubernetes-container-escape-using-ebpf/
+- https://blog.aquasec.com/kubernetes-security-pod-escape-log-mounts
+- https://labs.bishopfox.com/tech-blog/bad-pods-kubernetes-pod-privilege-escalation

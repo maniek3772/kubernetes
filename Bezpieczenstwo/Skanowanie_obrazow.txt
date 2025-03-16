@@ -1,0 +1,25 @@
+Dlaczego należy skanować obrazy?
+- obrazy bazowe, z których korzystamy mogą mieć w sobie podatności. Te podatności zostają przenoszone do naszego obrazu z aplikacją.
+
+Narzędzia open-source do skanowania obrazów:
+- Trivy
+- Clair - używane przez ECR (Elastic Container Registry) na AWS
+- Anchore
+
+Polecane Trivy:
+- wykrywa podatności w obrazach bazujących na Alpine Linux
+- pozwala na skanowanie lokalnych obrazów
+- możliwość integracji z CI (Gitlab, CircleCI, TravisCI)
+
+Ścieżka: https://github.com/aquasecurity/trivy
+
+Przykład użycia:
+trivy --severity HIGH,CRITICAL docker.io/library/node:13.10
+
+trivy image node:13.10 > node:13.10.log
+cat node:13.10.log | grep 'CRITICAL\|HIGH'
+
+
+Podsumowanie:
+- skanowanie obrazów pod kątem bezpieczeństwa powinno być jednym z kroków CI/CD
+- jeżeli obraz bazowy posiada podatności należy sprawdzić czy nie ma nowszej wersji w której ta podatność może być załatana
