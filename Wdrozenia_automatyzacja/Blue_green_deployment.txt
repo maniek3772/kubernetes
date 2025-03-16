@@ -1,0 +1,72 @@
+Wdrożenie nowej wersji bez przestoju aplikacji. W razie poblemów można bardzo prosto zrobić rollback po prostu wdrażając poprzednią wersję ingress-a
+
+
+Jak to zrobić?
+- mamy wdrożoną wersję 1 aplikacji i ingress w wersji 1
+- wdrażamy wersję aplikacji 2
+- wdrażamy ingress resource w wersji 2
+JEŻELI WSZYSTKO DZIAŁA TO:
+- usuwamy wersję 1
+
+
+Przykład Ingress Resource wersji 1 
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blue-green-ingress
+  labels:
+    part-of: blue-green-demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /()(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: passage-webapp-svc-v1
+            port:
+              number:  80
+      - path: /api/(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: weather-api-svc-v1
+            port:
+              number: 80
+
+Przykład Ingress Resource wersji 2
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blue-green-ingress
+  labels:
+    part-of: blue-green-demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /()(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: passage-webapp-svc-v2
+            port:
+              number:  80
+      - path: /api/(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: weather-api-svc-v2
+            port:
+              number: 80

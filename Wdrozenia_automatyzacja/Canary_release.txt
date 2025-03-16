@@ -1,0 +1,39 @@
+NGINX Ingress controler ma wbudowaną opcję Canary release
+
+Po wdrożeniu aplikacji można zdefiniować ile procent ruchu będzie przekierowane do następnej wersji.
+
+Jak to się robi?
+- jak działa aplikacja w wersji 1 i Ingress resource w wersji 1
+- obok wdraża się aplikację w wersji 2 
+- wdraża się ingress resource canary (zawierający ile % ruchu ma być przekierowane na wersję 2)
+JEŻELI WSZYSTKO JEST OK TO:
+- usuwamy ingress resource canary
+- wdrażamy ingress w wersji 2
+
+
+Przykład:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: info-app-canary
+  labels:
+    part-of: canary-demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    
+    # Umożliwienie przekierowania 30% ruchu do wersji 2
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "30"
+spec:
+  rules:
+  - host: info.app.<ip>.nip.io  # publiczny adres IP. Serwis nip.io stworzy wpis w DNS i będzie kierować do danego adresu IP
+    http:
+      paths: 
+      - path: / 
+        pathType: Prefix
+        backend:
+          service:
+            name: info-webapp-svc-v2
+            port:
+              number: 80

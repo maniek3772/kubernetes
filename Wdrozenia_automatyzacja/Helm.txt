@@ -1,0 +1,71 @@
+Helm to narzędzie dzięki któremu można agregować obiekty Kubernetes i ich konfigurację do Helm Chart. Może zarządzać cyklem życia wdrożeń aplikacji. Dostępne jest także repozytorium gotowych Helm Chart-ów.
+
+Helm Chart to paczka którą można wdrożyć z odpowiednimi parametrami.
+
+Repozytorium ACR Micosoft Azure wspiera przechowywanie Helm Chartów.
+
+Jak można używać HELM?
+1. Korzystanie z gotowych Helm Chartów
+   + instalacja Helm
+   + znalezienie Helm Chart w Artifact Hub https://artifacthub.io 
+   + dodanie odpowiedniego repo - helm repo add bitnami https://charts.bitnami.com/bitnami
+   + instalacja Helm Chart - helm install my-wordpress bitnami/wordpress
+
+
+Z czego składa się Helm Chart?
+
+worpress/
+  Chart.yaml    # Metadane, info o autorach, wersje, zależności
+  values.yaml   # Parametry które można samemu przekazać podczas instalacji Helm Chart (np. wersja docker image, opcje ingress-a, limit zasobów sprzętowych, ilość replik)
+  values.schema.json  # schemat danych dla pliku values.yaml
+  templates/   # pliki YAML reprezentujące obiekty w Kubernetes: Deployment, Secret, Service, StatefulSet itd. - gdzie podstawiane są wartości z pliku values.yaml
+    deployment.yaml
+    secrets.yaml
+    service.yaml
+    ingress.yaml
+    ....
+    pvc.yaml
+
+
+Jak przebiega wdrożenie?
+- helm bierze pliki w templates i podstawia do nich wartości z pliku values.yaml
+- łączy się z apiserver{} i wdraża aplikacje w Kubernetes (czyli robi Release - mamy śledzenie zmian i możemy się cofnąć do poprzedniej wersji)
+
+
+Przykładowe komendy Helm podczas wdrożenia
+- helm install my-wordpress bitnami/wordpress -f values.yaml
+- helm status release_name
+- helm delete release_name
+
+
+# zwrócenie wszystkich rewizji, które zostały wdrożone na klaster
+helm list
+
+# zaaplikowanie nowej konfiguracji z nową wartością dla parametru
+helm upgrade --set replicas=2
+
+# zaaplikowanie nowej konfiguracji jak zmieniliśmy pliki w katalogu
+helm upgrade <nazwa_aplikacji> ./<folder_z_aplikacja>
+
+# wyświetlenie zbioru obiektów jakie zostały wdrożone na klaster
+helm get manifest <nazwa_wdrożenia>
+
+
+
+# Polecenie tworzące szablon do tworzenia własnego Helm Chart
+helm create <nazwa_aplikacji>
+
+# wyświetlenie co się podstawia do Helm Chart z domyślnym values.yaml
+helm install --generate-name --dry-run --debug ./<folder_z_aplikacja>
+
+# wyświetlenie co się podstawia do Helm Chart z customowym values-with-ingress.yaml
+helm install --generate-name --dry-run --debug -f ./<folder_z_aplikacja>/values-with-ingress.yaml ./<folder_z_aplikacja>
+
+
+# wyświetlenie historii wdrożeń
+helm history <nazwa_aplikacji>
+
+# rollback do rewizji 1
+helm rollback <nazwa_aplikacji> 1
+
+
