@@ -1,0 +1,16 @@
+Deployment:
+- pody tworzone w tym samym czasie
+- losowe nazwy podów przy pierwszym tworzeniu, skalowaniu i modyfikacji
+- jeden PersistentVolumeClaim dla wszystkich replik
+
+Jaki jest problem z Deploymentem przy aplikacjach stanowych?
+Problem gdy aplikacja składa się z wielu podów, które tworzą logiczną całość i zależą od siebie.
+Przykład:
+- usługi replikujące dane między instancjami: Redis, Kafka, PostgreSQL
+
+
+StatefulSet
+- pody tworzone jeden po drugim (status Ready)
+- stała numeracja podów - przy pierwszym tworzeniu, skalowaniu i modyfikacji
+- każda replika posiada własny dedykowany PersistentVolumeClaim
+

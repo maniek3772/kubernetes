@@ -1,0 +1,16 @@
+Aplikacja stanowa:
+- każda kolejna transakcja jest zależna od poprzedniej
+
+Przykład:
+1. Dodajemy nowy rekord w relacyjnej bazie danych
+2. Modyfikujemy rekord
+3. Modyfikujemy ten sam rekord jeszcze raz
+
+
+Przykłady aplikacji/usług stanowych:
+1. Bazy danych - relacyjne/NoSQL/grafowe/klucz-wartość (MongoDB, PostgreSQL, MySQL)
+2. Propagacja zdarzeń. (Apache Kafka)
+3. Kolejki wiadomości (RabbitMQ)
+4. Menedżer kluczy/haseł (Hashicorp KeyVault)
+
+Do wdrażania aplikacji stanowych wykorzystuje się StatefulSet

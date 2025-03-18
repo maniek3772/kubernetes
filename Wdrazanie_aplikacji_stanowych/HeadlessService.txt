@@ -1,0 +1,95 @@
+Nowy typ serwisu.
+Dotychczas poznaliśmy:
+- ClusterIP
+- NodePort
+- LoadBalancer
+- ExternalName
+
+Headless Service wyróżnia się:
+- brak stałego adresu IP
+- nie istnieje Load Balancing - odwołuje się bezpośrednio do podów po DNS
+
+Kiedy wiadomo, że jest Headless Service?
+clusterIP: None
+
+
+
+Tradycyjny service
+- ma Load Balancing i rozrzuca ruch do poszczególnych podów
+- stały adres IP + DNS
+
+IP: 10.42.0.21
+DNS: myapp.default.svc.cluster.local
+
+
+Headless Service
+- umożliwia komunikację z poszczególnymi podami
+- ma tylko DNS
+
+DNS: redis.default.svc.cluster.local
+
+Do każdego z podów można dostać się po jego nazwie np.
+
+redis-0.redis.default.svc.cluster.local
+redis-1.redis.default.svc.cluster.local
+redis-2.redis.default.svc.cluster.local
+
+
+Przykład Headless Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis    # to się bierze do StatefulSet
+spec:
+  clusterIP: None
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: client
+selector:
+  app: redis
+
+
+Przykład StatefulSet
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  serviceName: redis-service # tutaj wpisuje się name z HeadlessService
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis-ctr
+        image: redis:5.0.1-alpine
+    selector:
+      matchLabels:
+        app: redis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

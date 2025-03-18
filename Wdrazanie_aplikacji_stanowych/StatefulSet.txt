@@ -1,0 +1,36 @@
+Jak działa StatefulSet?
+- pody są tworzone kolejno. Pierwszy musi mieć status Ready, żeby zaczął tworzyć się drugi
+- pody są numerowane od 0 do n (n = ilość podów - 1)
+- każda replika otrzymuje unikalny PersistentVolumeClaim (pvc-0, pvc-1, pvc-2)
+- aby zapewnić identyfikator sieciowy dla Podów - wymagane jest utworzenie i podpięcie HeadlessService
+
+
+Istnieje możliwość zmiany domyślnego zachowania StatefulSet - z tworzenia jeden po drugim od 0 do n oraz usuwania od ostatniego do pierwszego poda.
+Odpowiada za to podManagementPolicy:
+- OrderedReady - domyślne zachowanie
+- Parallel - pody tworzone i usuwane równocześnie
+
+
+Przykład StatefulSet
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  serviceName: redis-service # tutaj wpisuje się nazwę HeadlessService
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis-ctr
+        image: redis:5.0.1-alpine
+    selector:
+      matchLabels:
+        app: redis
+

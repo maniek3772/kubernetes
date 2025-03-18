@@ -93,6 +93,17 @@ kubectl rollout history deployment/<nazwa_deploymentu> --revision=<numer_rewizji
 #Przekierowanie portów z kontenera na hosta
 kubectl port-forward <nazwa_poda> 5601:5601
 
+# Sprawdzenie jakie StatefulSet są na klastrze
+kubectl get sts
+
+# Przykład wyciągnięcia adresów podów które są na klastrze dla redisa
+kubectl get pods -l app=redis-cluster -o jsonpath='{range.items[*]}{.status.podIP}:6379 '
+
+# Szybkie skalowanie deploymentu aplikacji do 2 replik
+kubectl scale deployment <nazwa_deployment> --replicas=2
+
+# Szybkie usuwanie całej aplikacji z klastra
+kubectl delete -f ./nazwa_katalogu/
 
 
 
