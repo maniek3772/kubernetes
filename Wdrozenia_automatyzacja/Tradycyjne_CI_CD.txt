@@ -1,0 +1,40 @@
+Proste CI/CD
+
+Kod źródłowy -> Testy jednostkowe -> Testy integracyjne -> Skanowanie zależności pod kątem bezpieczeństwa
+
+
+FAZA BUILD
+z kodu źródłowego Dockerfile buduje Docker image
+
+FAZA PUSH
+Docker image jest wypychany do Container Registry
+
+FAZA SKAN
+W Container Registry obraz jest skanowany pod kątem bezpieczeństwa
+
+FAZA DEPLOY
+Wdrożenie do Kubernetes
+
+
+Warto dodać do procesu CI/CD
+- walidacja kodu źródłowego:
+  + skanowanie zależności
+  + testy jednostkowe, integracyjne itd
+- polityka branchy np. zablokowanie publikowania bezpośrednio do mastera oraz wymuszanie Merge Request/Pull Request
+- deployment tylko takich obrazów, które nie posiadają krytycznych podatności
+- budowanie i publikacja Helm Chartów w repozytorium
+- automatyczny deployment na środowiska Dev/Stage + manualny deployment na produkcję (np. z użyciem konkretnej wersji Helm Chart)
+- prywatne repozytorium na obrazy dockerowe oraz Helm Chart + integracja z klastrem, żeby sam mógł pobierać obrazy
+
+
+
+Tradycyjne CI/CD - zalety
++ całość w jednym narzędziu (np. Gitlab)
+  - kod źródłowy
+  - Kuberntes manifest (YAML)
+  - Repozytorium obrazów (docker registry)
++ widoczność całego pipeline:
+  - budowanie źródeł
+  - skanowanie
+  - deployment
+

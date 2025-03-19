@@ -1,0 +1,29 @@
+Czym jest GitOps?
+- podejście w którym konfiguracja infrastruktury (Infrastructure as a Code) przechowywana jest w repozytorium GIT
+- GIT jest jedynym źródłem prawdy o stanie systemu, a wszystkie zmiany tego stanu muszą być zmienione w repozytorium, żeby były wdrożone na klaster
+
+W dodatkowym repozytorium dla infrastruktury są przechowywane pliki YAML lub Helm
+
+Repozytorium pozwala na:
+- merge request
+- code review
+- testy automatyczne
+- możliwość rollbacku
+
+
+Możliwe rodzaje deploymentów:
+
+Push Deployment 
+- serwer CI/CD odpowiada za trigerowanie budowania obrazów, wypchnięcie obrazu do rejestru obrazów i push na środowisko produkcyjne
+
+Pull Deployment 
+- istnieje agent działający wewnątrz klastra
+- agent monitoruje i porównuje aktualny stan [klaster Kubernetes](actual state) z oczekiwanym stanem [repozytorium GIT z infrastrukturą] (desire state). Jak oczekiwany stan nie zgadza się z aktualnym to robi PULL z Git w wrzuca na klaster.
+
+
+
+GitOps
+- ArgoCD
+- FluxCD
+- Gitlab Enterprise
+
