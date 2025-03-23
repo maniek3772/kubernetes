@@ -1,0 +1,38 @@
+Przebieg żądania do apiserver{}:
+- http request
+- uwierzytelnienie i autoryzacja
+- mutating admission <-> mutating admission webhook (w locie podmienia konfigurację którą podał użytkownik)
+- walidacja struktury obiektu (schema validation)
+- validating admission <-> validating admission webhook (OPA Gatekeeper)
+- etcd (kv)
+
+
+
+Open Policy Agent  (OPA)
+- silnik do wymuszania polityk w środowiskach cloud-native
+- OPA może być używany do wymuszania polityk w mikroserwisach, Kubernetes, pipeline CI/CD oraz API Gateway
+- polityki tworzy się w języku Rego - https://play.openpolicyagent.org
+
+
+Opa Gatekeeper
+- implementacja OPS dla Kubernetess jako Validating Admission Webhook
+- mechanizm pozwalający na przechwycenie i walidację żądań skierowanych do apiserver{}
+- blokuje tworzenie nowych obiektów np. Podów które nie są zgodne z dobrymi praktykami https://github.com/open-policy-agent/gatekeeper
+
+
+Jak używać OPA Gatekeeper?
+- instalacja na klastrze
+- zdefiniowanie polityki co chcemy sprawdzać (ConstraintTemplate)
+- wdrożenie polityki z możliwością przekazania parametrów np. na danym namespace, do konkretnych obiektów itp (Constraint)
+
+Ma gotową bibliotekę gotowych constraintów
+- więcej pod adresem https://github.com/open-policy-agent/gatekeeper-library
+
+
+Polecenia na sprawdzenie logów:
+
+kubectl logs -l control-plane=audit-controller -n gatekeeper-system
+
+kubectl logs -l control-plane=controller-manager -n gatekeeper-system
+
+
